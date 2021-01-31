@@ -4,10 +4,6 @@ using UnityEngine;
 
 public class GameController : MonoBehaviour
 {
-    public GameObject[] enemyPath = new GameObject[0];
-
-    public Wave[] waves = new Wave[0];
-
     [Header("Enemy References")]
     public GameObject redEnemy;
     public GameObject blueEnemy;
@@ -19,19 +15,118 @@ public class GameController : MonoBehaviour
     public float timePerTick = 1f;
     public float timeBetweenTicks = 1f;
 
+    [Header("Tower Grid Settings")]
+    public GameObject gridOrigin;
+    public float gridScale = .2f;
+    public int gridHeight = 5;
+    public int gridWidth = 5;
+    public bool[] gridDisabledPositions;
+
+    [Header("Virtual Mouse Settings")]
+    public GameObject virtualMouseGameObject;
+    public float mouseGameObjectZ = 1;
+
+    [Header("Tower Settings")]
+    public float towerInstantiateZ = 0;
+
+    private TowerGrid towerGrid;
+    private MouseObserverBevahior mouseObserver;
+    public GameObject[] enemyPath = new GameObject[0];
+    public Wave[] waves = new Wave[0];
+    private Camera mainCamera;
+
+    private GameObject currentTowerHolding;
 
     // Start is called before the first frame update
     void Start()
     {
-        SetupWaves();
+        mainCamera = Camera.main;
 
+        towerGrid = new TowerGrid(gridWidth, gridHeight, gridScale, gridOrigin.transform.position, gridDisabledPositions);
+
+        mouseObserver = GetComponent<MouseObserverBevahior>();
+
+        mouseObserver.OnMouseDrag += MouseDrag;
+        mouseObserver.OnMousePress += MousePress;
+
+        SetupWaves();
         StartCoroutine("SpawnWaves");
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(virtualMouseGameObject != null)
+        {
+            virtualMouseGameObject.transform.position = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            virtualMouseGameObject.transform.position = new Vector3(virtualMouseGameObject.transform.position.x, virtualMouseGameObject.transform.position.y, mouseGameObjectZ);
+        }
+    }
+
+    List<GameObject> GetTowersAtPosition(Vector3 positionWorld)
+    {
+        List<GameObject> hits = new List<GameObject>();
+
+        GameObject[] towers = GameObject.FindGameObjectsWithTag("Tower");
         
+        foreach(GameObject tower in towers)
+        {
+            BoxCollider2D collider = tower.GetComponent<BoxCollider2D>();
+            if(collider.OverlapPoint(positionWorld))
+            {
+                hits.Add(tower);
+            }
+        }
+
+        return hits;
+    }
+
+    void MousePress(int button, Vector3 positionScreen)
+    {
+        Vector3 positionWorld = mainCamera.ScreenToWorldPoint(positionScreen);
+        List<GameObject> clickedTowers = GetTowersAtPosition(positionWorld);
+        if(clickedTowers.Count > 0)
+        {
+            // TODO: Evaluate
+            currentTowerHolding = Instantiate<GameObject>(clickedTowers[0], virtualMouseGameObject.transform);
+            currentTowerHolding.transform.localPosition = Vector3.zero;
+
+            TowerBehavior towerBehavior = currentTowerHolding.GetComponent<TowerBehavior>();
+            towerBehavior.enabled = false;
+        }
+    }
+
+    void MouseDrag(int button, Vector3 startPosScreen, Vector3 currentPosScreen, float time, bool isOver)
+    {
+        if (currentTowerHolding != null) {
+            if (isOver)
+            {
+                
+                Vector3 worldPos = mainCamera.ScreenToWorldPoint(currentPosScreen);
+
+                TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);
+
+                if(gridPosition != null && !towerGrid.isGridPosOccupied(gridPosition))
+                {
+                    // can place tower
+                    TowerBehavior towerBehavior = currentTowerHolding.GetComponent<TowerBehavior>();
+                    towerBehavior.enabled = true;
+
+                    currentTowerHolding.transform.parent = null;
+
+                    Vector3 snappedPosition = towerGrid.snapToGrid(worldPos, towerInstantiateZ);
+                    currentTowerHolding.transform.position = snappedPosition;
+
+                    towerGrid.setGridPositionOccupied(gridPosition, true);
+                } else
+                {
+                    Destroy(currentTowerHolding);
+                }
+
+                
+                currentTowerHolding = null;
+            }
+        }
     }
 
     void SetupWaves()
@@ -101,6 +196,51 @@ public class GameController : MonoBehaviour
         // draw wave info
 
         Gizmos.color = Color.white;
+
+        // draw tower grid info
+
+        if(towerGrid != null)
+        {
+            for(int x = 0; x < towerGrid.Width + 1; x++)
+            {
+                Debug.DrawLine(towerGrid.toWorldPosition(new TowerGrid.Position(x, 0)), towerGrid.toWorldPosition(new TowerGrid.Position(x, towerGrid.Height)), Color.green);
+            }
+
+            for (int y = 0; y < towerGrid.Height + 1; y++)
+            {
+                Debug.DrawLine(towerGrid.toWorldPosition(new TowerGrid.Position(0, y)), towerGrid.toWorldPosition(new TowerGrid.Position(towerGrid.Width, y)), Color.green);
+            }
+
+            for(int y = 0; y < towerGrid.Height; y++)
+            {
+                for(int x = 0; x < towerGrid.Width; x++)
+                {
+                    if(towerGrid.isGridPosDisabled(new TowerGrid.Position(x, y)))
+                    {
+                        DrawX(towerGrid.toWorldPosition(new TowerGrid.Position(x, y)), towerGrid.Scale, towerGrid.Scale, Color.red);
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Draw an X shape
+    /// </summary>
+    /// <param name="corner">Bottom-left corner of the X in world space</param>
+    /// <param name="width">Width of the X in world space</param>
+    /// <param name="height">Height of the X in world space</param>
+    /// <param name="color">Color of the X</param>
+    void DrawX(Vector3 corner, float width, float height, Color color)
+    {
+        float x1 = corner.x;
+        float x2 = corner.x + width;
+
+        float y1 = corner.y;
+        float y2 = corner.y + height;
+
+        Debug.DrawLine(new Vector3(x1, y1), new Vector3(x2, y2), color);
+        Debug.DrawLine(new Vector3(x1, y2), new Vector3(x2, y1), color);
     }
 #endif
 }

@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Wave
 {
-    Dictionary<GameObject, int> enemySets;
+    private Dictionary<GameObject, int> enemySets;
 
-    int enemiesPerTick;
+    private int enemiesPerTick;
 
     public Wave(Dictionary<GameObject, int> enemySets, int enemiesPerTick)
     {
@@ -14,6 +14,9 @@ public class Wave
         this.enemiesPerTick = enemiesPerTick;
     }
 
+    /// <summary>
+    /// If the wave has enemies left to spawn.
+    /// </summary>
     public bool HasEnemies
     {
         get {
@@ -21,6 +24,10 @@ public class Wave
         }
     }
 
+    /// <summary>
+    /// Get the enemies for a single wave tick in random order.
+    /// </summary>
+    /// <returns>List of enemies for a single wave tick in random order</returns>
     public List<GameObject> getNextSpawn()
     {
         List<GameObject> nextSpawn = new List<GameObject>();
