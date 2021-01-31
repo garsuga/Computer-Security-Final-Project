@@ -37,9 +37,10 @@ public class Wave
             int leftInWave = enemySets[nextEnemy];
             leftInWave--;
 
-            if(leftInWave <= 0)
+            enemySets.Remove(nextEnemy);
+            if (leftInWave > 0)
             {
-                enemySets.Remove(nextEnemy);
+                enemySets.Add(nextEnemy, leftInWave);
             }
 
             nextSpawn.Add(nextEnemy);

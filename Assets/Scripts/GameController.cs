@@ -79,6 +79,7 @@ public class GameController : MonoBehaviour
 #if UNITY_EDITOR
     void OnDrawGizmos()
     {
+        // draw paths
         GameObject last = null;
 
         Gizmos.color = Color.yellow;
@@ -96,6 +97,10 @@ public class GameController : MonoBehaviour
 
             Gizmos.DrawWireCube(current.transform.position, Vector3.one * .2f);
         }
+
+        // draw wave info
+
+        Gizmos.color = Color.white;
     }
 #endif
 }
