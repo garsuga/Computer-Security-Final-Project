@@ -106,7 +106,7 @@ public class GameController : MonoBehaviour
 
                 TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);
 
-                if(gridPosition != null && !towerGrid.isGridPosOccupied(gridPosition))
+                if(gridPosition != null && !towerGrid.isGridPosDisabled(gridPosition) && !towerGrid.isGridPosOccupied(gridPosition))
                 {
                     // can place tower
                     TowerBehavior towerBehavior = currentTowerHolding.GetComponent<TowerBehavior>();

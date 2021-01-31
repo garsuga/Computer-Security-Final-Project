@@ -32,8 +32,10 @@ public class Wave
     {
         List<GameObject> nextSpawn = new List<GameObject>();
 
-        GameObject[] keys = new GameObject[enemySets.Keys.Count];
-        enemySets.Keys.CopyTo(keys, 0);
+        GameObject[] keysArr = new GameObject[enemySets.Keys.Count];
+        enemySets.Keys.CopyTo(keysArr, 0);
+
+        List<GameObject> keys = new List<GameObject>(keysArr);
 
         for(int i = 0; i < enemiesPerTick && enemySets.Count > 0; i++)
         {
@@ -48,6 +50,9 @@ public class Wave
             if (leftInWave > 0)
             {
                 enemySets.Add(nextEnemy, leftInWave);
+            } else
+            {
+                keys.Remove(nextEnemy);
             }
 
             nextSpawn.Add(nextEnemy);
