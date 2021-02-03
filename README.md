@@ -11,3 +11,10 @@ Enemies will employ cyber security attacks covered in class to inhibit the playe
 The player will have specifically tailored options to counteract each of these attacks. 
 The game will be single-player and introduce more complexity with each level. Enemies will be based on waves.
 
+02/02/2021
+Built the tower model and the mouse capturing functions
+Built the player health bar scripts and the related UI effects
+Built the scecen switching functions from the startup scene to the playing scene
+
+**problem to solve: the conflict between the mouse capturing function and the UI actions (e.t. Button Listening Function)
+
