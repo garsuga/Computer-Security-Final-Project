@@ -74,7 +74,11 @@ public class GameController : MonoBehaviour
             BoxCollider2D collider = tower.GetComponent<BoxCollider2D>();
             if(collider.OverlapPoint(positionWorld))
             {
-                hits.Add(tower);
+                TowerCanBeLiftedBehavior canBeLiftedBehavior = tower.GetComponent<TowerCanBeLiftedBehavior>();
+                if (canBeLiftedBehavior.enabled)
+                {
+                    hits.Add(tower);
+                }
             }
         }
 
@@ -101,7 +105,6 @@ public class GameController : MonoBehaviour
         if (currentTowerHolding != null) {
             if (isOver)
             {
-                
                 Vector3 worldPos = mainCamera.ScreenToWorldPoint(currentPosScreen);
 
                 TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);
@@ -118,6 +121,9 @@ public class GameController : MonoBehaviour
                     currentTowerHolding.transform.position = snappedPosition;
 
                     towerGrid.setGridPositionOccupied(gridPosition, true);
+
+                    TowerCanBeLiftedBehavior canBeLiftedBehavior = currentTowerHolding.GetComponent<TowerCanBeLiftedBehavior>();
+                    canBeLiftedBehavior.enabled = false;
                 } else
                 {
                     Destroy(currentTowerHolding);
