@@ -77,7 +77,12 @@ public class GameController : MonoBehaviour
                 TowerCanBeLiftedBehavior canBeLiftedBehavior = tower.GetComponent<TowerCanBeLiftedBehavior>();
                 if (canBeLiftedBehavior != null && canBeLiftedBehavior.enabled)
                 {
-                    hits.Add(tower);
+                    GameObject tempTower = tower;
+                    while(tempTower.transform.parent != null)
+                    {
+                        tempTower = tempTower.transform.parent.gameObject;
+                    }
+                    hits.Add(tempTower);
                 }
             }
         }
@@ -95,7 +100,7 @@ public class GameController : MonoBehaviour
             currentTowerHolding = Instantiate<GameObject>(clickedTowers[0], virtualMouseGameObject.transform);
             currentTowerHolding.transform.localPosition = Vector3.zero;
 
-            TowerBehavior towerBehavior = currentTowerHolding.GetComponent<TowerBehavior>();
+            TowerBehavior towerBehavior = currentTowerHolding.GetComponentInChildren<TowerBehavior>();
             towerBehavior.enabled = false;
         }
     }
@@ -112,7 +117,7 @@ public class GameController : MonoBehaviour
                 if(gridPosition != null && !towerGrid.isGridPosDisabled(gridPosition) && !towerGrid.isGridPosOccupied(gridPosition))
                 {
                     // can place tower
-                    TowerBehavior towerBehavior = currentTowerHolding.GetComponent<TowerBehavior>();
+                    TowerBehavior towerBehavior = currentTowerHolding.GetComponentInChildren<TowerBehavior>();
                     towerBehavior.enabled = true;
 
                     currentTowerHolding.transform.parent = null;
@@ -122,8 +127,11 @@ public class GameController : MonoBehaviour
 
                     towerGrid.setGridPositionOccupied(gridPosition, true);
 
-                    TowerCanBeLiftedBehavior canBeLiftedBehavior = currentTowerHolding.GetComponent<TowerCanBeLiftedBehavior>();
+                    TowerCanBeLiftedBehavior canBeLiftedBehavior = currentTowerHolding.GetComponentInChildren<TowerCanBeLiftedBehavior>();
                     canBeLiftedBehavior.enabled = false;
+
+                    TowerShootBehavior shootBehavior = towerBehavior.shootBehavior;
+                    shootBehavior.enabled = true;
                 } else
                 {
                     Destroy(currentTowerHolding);

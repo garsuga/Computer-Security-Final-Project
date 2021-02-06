@@ -85,37 +85,25 @@ public class MouseObserverBevahior : MonoBehaviour
                 lastMouseDownPos[infoIndex] = Input.mousePosition;
                 lastMouseDownTime[infoIndex] = Time.realtimeSinceStartup;
 
-                if (OnMousePress != null)
-                {
-                    OnMousePress(button, Input.mousePosition);
-                }
+                OnMousePress?.Invoke(button, Input.mousePosition);
             } else
             {
                 // click ended
-                if(OnMouseRelease != null)
+                OnMouseRelease?.Invoke(button, Input.mousePosition);
+
+                Vector3 lastPosition = lastMouseDownPos[infoIndex];
+                float dragDist = (Input.mousePosition - lastPosition).sqrMagnitude;
+
+                if (lastMouseWasDragging[infoIndex] || dragDist >= minDistDragScreenSqr)
                 {
-                    OnMouseRelease(button, Input.mousePosition);
-                }
-
-                // drag
-                if (OnMouseDrag != null)
-                {
-                    Vector3 lastPosition = lastMouseDownPos[infoIndex];
-
-                    float dragDist = (Input.mousePosition - lastPosition).sqrMagnitude;
-
+                    // drag
                     //Debug.Log("MOUSE DRAG from " + lastPosition + " to " + Input.mousePosition + " dist " + String.Format("{0,2}", dragDist));
-                    
-                    if (lastMouseWasDragging[infoIndex] || dragDist >= minDistDragScreenSqr)
-                    {
-                        OnMouseDrag(button, lastMouseDownPos[infoIndex], Input.mousePosition, Time.realtimeSinceStartup - lastMouseDownTime[infoIndex], true);
-                    }
-                }
-
-                if(OnMouseClick != null)
+                    OnMouseDrag?.Invoke(button, lastMouseDownPos[infoIndex], Input.mousePosition, Time.realtimeSinceStartup - lastMouseDownTime[infoIndex], true);
+                } else
                 {
-                    OnMouseClick(button, lastMouseDownPos[infoIndex], Input.mousePosition);
-                } 
+                    OnMouseClick?.Invoke(button, lastMouseDownPos[infoIndex], Input.mousePosition);
+                }
+                
             }
             lastMouseDownState[infoIndex] = isPressed;
         }
@@ -149,10 +137,7 @@ public class MouseObserverBevahior : MonoBehaviour
             {
                 lastMouseWasDragging[infoIndex] = true;
 
-                if (OnMouseDrag != null)
-                {
-                    OnMouseDrag(button, lastMouseDownPos[infoIndex], Input.mousePosition, Time.realtimeSinceStartup - lastMouseDownTime[infoIndex], false);
-                }
+                OnMouseDrag?.Invoke(button, lastMouseDownPos[infoIndex], Input.mousePosition, Time.realtimeSinceStartup - lastMouseDownTime[infoIndex], false);
             }
         }
     }
