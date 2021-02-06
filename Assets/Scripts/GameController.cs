@@ -75,7 +75,7 @@ public class GameController : MonoBehaviour
             if(collider.OverlapPoint(positionWorld))
             {
                 TowerCanBeLiftedBehavior canBeLiftedBehavior = tower.GetComponent<TowerCanBeLiftedBehavior>();
-                if (canBeLiftedBehavior.enabled)
+                if (canBeLiftedBehavior != null && canBeLiftedBehavior.enabled)
                 {
                     hits.Add(tower);
                 }
