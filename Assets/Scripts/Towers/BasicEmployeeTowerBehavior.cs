@@ -4,16 +4,18 @@ using UnityEngine;
 
 public class BasicEmployeeTowerBehavior : TowerBehavior
 {
-    public GameObject projectilePrefab;
-    public GameObject projectileTransform;
-
+    [Header("Shoot Settings")]
     public float shootInterval = 5f;
     public int maxProjectilesActive = -1;
 
+    [Header("Projectile Settings")]
+    public GameObject projectilePrefab;
+    public GameObject projectileTransform;
     public float projectileSpeed = 10f;
+    public float projectileDamage = 35f;
 
     // Start is called before the first frame update
-    void Start()
+    public override void Start()
     {
         TurnTowardsBehavior turnTowardsBehavior = GetComponentInParent<TurnTowardsBehavior>();
 
@@ -31,14 +33,18 @@ public class BasicEmployeeTowerBehavior : TowerBehavior
         shootBehavior.OnHit += (projectile, hitObject) =>
         {
             //Debug.Log("Projectile Hit");
-            Destroy(hitObject);
+            EnemyBehavior enemy = hitObject.GetComponent<EnemyBehavior>();
+            // filter out hits on enemies that have already been destroyed
+            if (enemy.IsDead)
+                return false;
+            enemy.Health -= projectileDamage;
             return true;
         };
         shootBehavior.OnTargetChange += (newTarget) => turnTowardsBehavior.target = newTarget;
     }
 
     // Update is called once per frame
-    void Update()
+    public override void Update()
     {
         
     }
