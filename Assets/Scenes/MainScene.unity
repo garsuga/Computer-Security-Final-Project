@@ -354,7 +354,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -541,11 +541,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   shootBehavior: {fileID: 430848731}
-  projectilePrefab: {fileID: 223520565976025450, guid: 9be95b15d5d2a0d4d9c2a5c8429db3ca, type: 3}
-  projectileTransform: {fileID: 1847044711}
   shootInterval: 0.5
   maxProjectilesActive: 15
+  projectilePrefab: {fileID: 223520565976025450, guid: 9be95b15d5d2a0d4d9c2a5c8429db3ca, type: 3}
+  projectileTransform: {fileID: 1847044711}
   projectileSpeed: 10
+  projectileDamage: 35
 --- !u!61 &1046267102
 BoxCollider2D:
   m_ObjectHideFlags: 0
