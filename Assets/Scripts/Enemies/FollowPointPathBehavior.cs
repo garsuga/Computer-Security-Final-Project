@@ -6,7 +6,7 @@ public class FollowPointPathBehavior : MonoBehaviour
 {
 
     GameController controller;
-
+    PlayerHealth player_health;
     public float speed;
 
     public float moveUpdateRate = .02f;
@@ -14,7 +14,7 @@ public class FollowPointPathBehavior : MonoBehaviour
     void Start()
     {
         controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
-
+        player_health = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerHealth>();
         StartCoroutine("MoveToTargets");
         if(controller.enemyPath.Length > 0)
             transform.position = controller.enemyPath[0].transform.position;
@@ -54,6 +54,7 @@ public class FollowPointPathBehavior : MonoBehaviour
 
     void OnMoveFinished()
     {
+        player_health.AdjustHealth();
         Destroy(gameObject);
     }
 }
