@@ -22,7 +22,6 @@ public class HealthPanel : MonoBehaviour
 
     private HealthEffects _takeDamageEffect;
     private WaitForSeconds _wait;
-
     private void Awake()
     {
         _wait = new WaitForSeconds(waitTime);
