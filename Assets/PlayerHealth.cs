@@ -46,4 +46,6 @@ public class PlayerHealth : MonoBehaviour
         OnMaxHealthChanged?.Invoke(maxHealth);
     }
 
+    public bool HealthEmpty() { return currentHealth <= 0; }
+
 }
