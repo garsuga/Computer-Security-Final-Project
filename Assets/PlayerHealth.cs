@@ -2,15 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     [SerializeField] private float currentHealth;
     [SerializeField] private float maxHealth;
-
+    [SerializeField] private float deduction;
     public float MaxHealth => maxHealth;
     public float CurrentHealth => currentHealth;
+    public float Deduction => deduction;
 
+    private Text _currentHealthText;
     public static event Action<float> OnHealthChanged;
     public static event Action<float> OnMaxHealthChanged;
 
@@ -21,10 +24,13 @@ public class PlayerHealth : MonoBehaviour
         SetMaxHealth(maxHealth);
     }
 
-    public void AdjustHealth(float value)
+    public void AdjustHealth()
     {
-        currentHealth = Mathf.Clamp(currentHealth + value, 0, maxHealth);
+        currentHealth = Mathf.Clamp(currentHealth - deduction, 0, maxHealth);
+        _currentHealthText = GameObject.Find("CurrentHealth").GetComponent<Text>();
         OnHealthChanged?.Invoke(currentHealth);
+        _currentHealthText.text = currentHealth.ToString();
+        if (currentHealth / maxHealth <= 0.3) _currentHealthText.color = Color.red;
     }
 
     public void SetHealth(float value)
