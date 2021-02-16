@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class GameController : MonoBehaviour
 {
     [Header("Enemy References")]
@@ -199,7 +200,7 @@ public class GameController : MonoBehaviour
 
             if (last != null)
             {
-                Debug.DrawLine(last.transform.position, current.transform.position, Color.red);
+                Debug.DrawLine(last.transform.position, current.transform.position, Color.cyan);
             }
 
             last = current;
@@ -215,7 +216,7 @@ public class GameController : MonoBehaviour
 
         if(towerGrid != null)
         {
-            for(int x = 0; x < towerGrid.Width + 1; x++)
+            /*for(int x = 0; x < towerGrid.Width + 1; x++)
             {
                 Debug.DrawLine(towerGrid.toWorldPosition(new TowerGrid.Position(x, 0)), towerGrid.toWorldPosition(new TowerGrid.Position(x, towerGrid.Height)), Color.green);
             }
@@ -223,15 +224,15 @@ public class GameController : MonoBehaviour
             for (int y = 0; y < towerGrid.Height + 1; y++)
             {
                 Debug.DrawLine(towerGrid.toWorldPosition(new TowerGrid.Position(0, y)), towerGrid.toWorldPosition(new TowerGrid.Position(towerGrid.Width, y)), Color.green);
-            }
+            }*/
 
             for(int y = 0; y < towerGrid.Height; y++)
             {
                 for(int x = 0; x < towerGrid.Width; x++)
                 {
-                    if(towerGrid.isGridPosDisabled(new TowerGrid.Position(x, y)))
+                    if(!towerGrid.isGridPosDisabled(new TowerGrid.Position(x, y)))
                     {
-                        DrawX(towerGrid.toWorldPosition(new TowerGrid.Position(x, y)), towerGrid.Scale, towerGrid.Scale, Color.red);
+                        DrawSquare(towerGrid.toWorldPosition(new TowerGrid.Position(x, y)), towerGrid.Scale, towerGrid.Scale, Color.green);
                     }
                 }
             }
@@ -255,6 +256,20 @@ public class GameController : MonoBehaviour
 
         Debug.DrawLine(new Vector3(x1, y1), new Vector3(x2, y2), color);
         Debug.DrawLine(new Vector3(x1, y2), new Vector3(x2, y1), color);
+    }
+
+    void DrawSquare(Vector3 corner, float width, float height, Color color)
+    {
+        float x1 = corner.x;
+        float x2 = corner.x + width;
+
+        float y1 = corner.y;
+        float y2 = corner.y + height;
+
+        Debug.DrawLine(new Vector3(x1, y1), new Vector3(x2, y1), color);
+        Debug.DrawLine(new Vector3(x2, y1), new Vector3(x2, y2), color);
+        Debug.DrawLine(new Vector3(x2, y2), new Vector3(x1, y2), color);
+        Debug.DrawLine(new Vector3(x1, y2), new Vector3(x1, y1), color);
     }
 #endif
 }
