@@ -4,6 +4,8 @@ using UnityEngine;
 
 public abstract class TowerBehavior : MonoBehaviour
 {
+    [Header("General Tower Settings")]
+    public int towerCost = 1000;
     /// <summary>
     /// Reference to the shoot behavior which handles boilerplate shooting mechanics
     /// </summary>

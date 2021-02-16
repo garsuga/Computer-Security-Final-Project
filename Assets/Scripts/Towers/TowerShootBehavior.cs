@@ -29,6 +29,8 @@ public class TowerShootBehavior : MonoBehaviour
     /// <param name="target">Reference to the new target's GameObject</param>
     public delegate void OnTargetChangeHandler(GameObject target);
 
+    public delegate void ObjectRangeHandler(GameObject obj);
+
     /// <summary>
     /// Tags which can be targeted
     /// </summary>
@@ -77,6 +79,16 @@ public class TowerShootBehavior : MonoBehaviour
     }
 
     public OnTargetChangeHandler OnTargetChange
+    {
+        get;set;
+    }
+
+    public ObjectRangeHandler OnObjectEnterRange
+    {
+        get;set;
+    }
+
+    public ObjectRangeHandler OnObjectLeaveRange
     {
         get;set;
     }
@@ -168,14 +180,18 @@ public class TowerShootBehavior : MonoBehaviour
         if (!IsValidTarget(hit, collision))
             return;
 
-        withinRange.Add(hit.gameObject);
+        withinRange.Add(hit);
+        OnObjectEnterRange?.Invoke(hit);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         //Debug.Log("Collision has exited tower collider");
         if (withinRange.Contains(collision.gameObject))
+        {
             withinRange.Remove(collision.gameObject);
+            OnObjectLeaveRange?.Invoke(collision.gameObject);
+        }
 
         if(currentTarget == collision.gameObject)
         {

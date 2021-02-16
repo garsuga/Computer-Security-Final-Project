@@ -1,10 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
-[ExecuteInEditMode]
 public class GameController : MonoBehaviour
 {
+    public static GameController instance;
+
+    public GameController(): base()
+    {
+        instance = this;
+    }
+
     [Header("Enemy References")]
     public GameObject redEnemy;
     public GameObject blueEnemy;
@@ -30,6 +39,30 @@ public class GameController : MonoBehaviour
     [Header("Tower Settings")]
     public float towerInstantiateZ = 0;
 
+    [Header("Player Properties")]
+    public int _money = 10000;
+    public PlayerHealth playerHealth;
+    public Text playerMoneyTextElement;
+
+    [Header("Game Over Settings")]
+    public string gameOverSceneName = "FailedScene";
+
+    public int Money
+    {
+        get
+        {
+            return _money;
+        }
+
+        set
+        {
+            int oldMoney = _money;
+            _money = value;
+
+            OnMoneyChanged?.Invoke(oldMoney, _money);
+        }
+    }
+
     private TowerGrid towerGrid;
     private MouseObserverBevahior mouseObserver;
     public GameObject[] enemyPath = new GameObject[0];
@@ -38,10 +71,46 @@ public class GameController : MonoBehaviour
 
     private GameObject currentTowerHolding;
 
+    public delegate void RoundEvent(int roundNum);
+    public delegate void EnemyExitedEvent(GameObject whoExited);
+    public delegate void MoneyChangedEvent(int oldMoney, int newMoney);
+
+    public RoundEvent OnRoundEnd
+    {
+        get;set;
+    }
+
+    public RoundEvent OnRoundBegin
+    {
+        get;set;
+    }
+
+    public EnemyExitedEvent OnEnemyExited
+    {
+        get;set;
+    }
+
+    public MoneyChangedEvent OnMoneyChanged
+    {
+        get;set;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
         mainCamera = Camera.main;
+
+        OnEnemyExited += (whoExited) => playerHealth.AdjustHealth();
+        PlayerHealth.OnHealthChanged += (newHealth) =>
+        {
+            if (newHealth <= 0)
+            {
+                SceneManager.LoadScene(gameOverSceneName);
+            }
+        };
+
+        OnMoneyChanged += (oldMoney, newMoney) => playerMoneyTextElement.text = ((Int32)newMoney).ToString("C");
+        Money = Money;
 
         towerGrid = new TowerGrid(gridWidth, gridHeight, gridScale, gridOrigin.transform.position, gridDisabledPositions);
 
@@ -97,12 +166,17 @@ public class GameController : MonoBehaviour
         List<GameObject> clickedTowers = GetTowersAtPosition(positionWorld);
         if(clickedTowers.Count > 0)
         {
-            // TODO: Evaluate
-            currentTowerHolding = Instantiate<GameObject>(clickedTowers[0], virtualMouseGameObject.transform);
-            currentTowerHolding.transform.localPosition = Vector3.zero;
+            GameObject clickedTower = clickedTowers[0];
+            TowerBehavior _preTowerBehavior = clickedTower.GetComponentInChildren<TowerBehavior>();
+            if(_preTowerBehavior != null && _preTowerBehavior.towerCost <= Money)
+            {
+                // TODO: Evaluate
+                currentTowerHolding = Instantiate<GameObject>(clickedTowers[0], virtualMouseGameObject.transform);
+                currentTowerHolding.transform.localPosition = Vector3.zero;
 
-            TowerBehavior towerBehavior = currentTowerHolding.GetComponentInChildren<TowerBehavior>();
-            towerBehavior.enabled = false;
+                TowerBehavior towerBehavior = currentTowerHolding.GetComponentInChildren<TowerBehavior>();
+                towerBehavior.enabled = false;
+            }
         }
     }
 
@@ -133,6 +207,8 @@ public class GameController : MonoBehaviour
 
                     TowerShootBehavior shootBehavior = towerBehavior.shootBehavior;
                     shootBehavior.enabled = true;
+
+                    Money -= towerBehavior.towerCost;
                 } else
                 {
                     Destroy(currentTowerHolding);
@@ -165,7 +241,10 @@ public class GameController : MonoBehaviour
 
     IEnumerator SpawnWaves()
     {
+        int waveNum = 0;
         foreach(Wave wave in waves) {
+            waveNum++;
+            OnRoundBegin?.Invoke(waveNum);
             // single wave
             while(wave.HasEnemies)
             {
@@ -181,6 +260,7 @@ public class GameController : MonoBehaviour
 
                 yield return new WaitForSeconds(timeBetweenTicks);
             }
+            OnRoundEnd?.Invoke(waveNum);
 
             yield return new WaitForSeconds(timeBetweenWaves);
         }
