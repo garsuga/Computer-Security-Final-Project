@@ -18,5 +18,5 @@ public class ButtonControl : MonoBehaviour
     }
 
     void LoadMainMenuScene() { SceneManager.LoadScene("MainMenuScene", LoadSceneMode.Single); }
-    void LoadMainScene() { SceneManager.LoadScene("MainScene", LoadSceneMode.Single); }
+    void LoadMainScene() { SceneManager.LoadScene("MainSceneTest", LoadSceneMode.Single); }
 }

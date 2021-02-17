@@ -189,11 +189,13 @@ public class GameController : MonoBehaviour
 
                 TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);
 
-                if(gridPosition != null && !towerGrid.isGridPosDisabled(gridPosition) && !towerGrid.isGridPosOccupied(gridPosition))
+                if (gridPosition != null && !towerGrid.isGridPosDisabled(gridPosition) && !towerGrid.isGridPosOccupied(gridPosition))
                 {
                     // can place tower
                     TowerBehavior towerBehavior = currentTowerHolding.GetComponentInChildren<TowerBehavior>();
                     towerBehavior.enabled = true;
+                    towerBehavior.isPlaced = true;
+                    towerBehavior.OnPlaced?.Invoke(currentTowerHolding);
 
                     currentTowerHolding.transform.parent = null;
 
@@ -202,13 +204,8 @@ public class GameController : MonoBehaviour
 
                     towerGrid.setGridPositionOccupied(gridPosition, true);
 
-                    TowerCanBeLiftedBehavior canBeLiftedBehavior = currentTowerHolding.GetComponentInChildren<TowerCanBeLiftedBehavior>();
-                    canBeLiftedBehavior.enabled = false;
-
-                    TowerShootBehavior shootBehavior = towerBehavior.shootBehavior;
-                    shootBehavior.enabled = true;
-
                     Money -= towerBehavior.towerCost;
+                    ///
                 } else
                 {
                     Destroy(currentTowerHolding);

@@ -2,35 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DatabaseTower : TowerBehavior
+public class DatabaseTower : HackableTower
 {
-    public float chanceToBeHacked = 1f;
-    private bool isHacked = false;
+    [Header("Database Tower Settings")]
+    public float databaseMaxDist = 2.5f;
+    public float databaseIncreasePercent = .25f;
 
-    public bool Hacked
+    public float lineRendererWidth = 1;
+
+    private LineRenderer currentLineRenderer;
+
+    public DatabaseTower() : base()
     {
-        get
+        OnPlaced += (towerRoot) => currentLineRenderer = DrawCircle(towerRoot, databaseMaxDist, lineRendererWidth);
+        OnHacked += (enemy) =>
         {
-            return isHacked;
-        }
+            if (currentLineRenderer != null)
+                currentLineRenderer.enabled = false;
+        };
+        OnUnhacked += () =>
+        {
+            if (currentLineRenderer != null)
+                currentLineRenderer.enabled = true;
+        };
     }
 
     // Start is called before the first frame update
     public override void Start()
     {
         base.Start();
-
-        shootBehavior.OnObjectEnterRange += (enemy) => TryGetHacked(enemy);
     }
 
-    void TryGetHacked(GameObject enemy)
-    {
-        if (enabled && Random.value < chanceToBeHacked)
-        {
-            Debug.Log("Web tower was hacked!");
-            this.transform.Rotate(new Vector3(0, 0, 45), Space.Self);
-            enabled = false;
-            isHacked = true;
-        }
-    }
+    
 }

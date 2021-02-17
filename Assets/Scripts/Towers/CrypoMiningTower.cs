@@ -11,6 +11,11 @@ public class CrypoMiningTower : TowerBehavior
     {
         base.Start();
 
-        GameController.instance.OnRoundEnd += (roundNum) => GameController.instance.Money += moneyAmount;
+        GameController.instance.OnRoundEnd += (roundNum) =>
+        {
+            if (!isPlaced)
+                return;
+            GameController.instance.Money += moneyAmount;
+        };
     }
 }
