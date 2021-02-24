@@ -1900,6 +1900,7 @@ MonoBehaviour:
   playerHealth: {fileID: 1446916049}
   playerMoneyTextElement: {fileID: 341468432}
   gameOverSceneName: FailedScene
+  lineRendererMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   enemyPath:
   - {fileID: 1916431691}
   - {fileID: 257676662}
