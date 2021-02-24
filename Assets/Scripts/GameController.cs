@@ -7,6 +7,79 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+    /// <summary>
+    /// From https://www.loekvandenouweland.com/content/use-linerenderer-in-unity-to-draw-a-circle.html
+    /// </summary>
+    /// <param name="container">GameObject to create LineRenderer on</param>
+    /// <param name="radius">Circle radius in relative space</param>
+    /// <param name="lineWidth">Line width in relative space</param>
+    public static LineRenderer DrawCircle(GameObject container, float radius, float lineWidth, Color color, bool useWorldSpace)
+    {
+        int segments = 360;
+        Vector3[] points = new Vector3[segments + 1];
+
+        for (int i = 0; i <= segments; i++)
+        {
+            var rad = Mathf.Deg2Rad * (i * 360f / segments);
+            points[i] = new Vector3(Mathf.Sin(rad) * radius, Mathf.Cos(rad) * radius);
+        }
+
+        return DrawPath(container, points, lineWidth, color, useWorldSpace);
+    }
+
+    /// <summary>
+    /// Draws a square around the game object with the given radius
+    /// </summary>
+    /// <param name="container">GameObject to create LineRenderer on</param>
+    /// <param name="offset">Offset to add to the square</param>
+    /// <param name="radius">Radius of square in relative space</param>
+    /// <param name="lineWidth">Line width in relative space</param>
+    /// <returns></returns>
+    public static LineRenderer DrawSquare(GameObject container, Vector3 offset, float radius, float lineWidth, Color color, bool useWorldSpace)
+    {
+        Vector3[] points = new Vector3[] { 
+            new Vector3(-radius, -radius) + offset,
+            new Vector3(radius, -radius) + offset,
+            new Vector3(radius, radius) + offset,
+            new Vector3(-radius, radius) + offset,
+            new Vector3(-radius, -radius) + offset
+        };
+
+        return DrawPath(container, points, lineWidth, color, useWorldSpace);
+    }
+
+    /// <summary>
+    /// Creates a LineRenderer component in the given GameObject with the following positions
+    /// </summary>
+    /// <param name="container">GameObject to create LineRenderer on</param>
+    /// <param name="positions">Positions of LineRenderer</param>
+    /// <param name="lineWidth">Line width in relative space</param>
+    /// <returns></returns>
+    public static LineRenderer DrawPath(GameObject container, Vector3[] positions, float lineWidth, Color color, bool useWorldSpace)
+    {
+        GameObject containerVirtChild = new GameObject("LineRenderer Holder");
+        containerVirtChild.transform.parent = container.transform;
+        containerVirtChild.transform.localPosition = Vector3.zero;
+
+        LineRenderer line = containerVirtChild.AddComponent<LineRenderer>();
+        line.useWorldSpace = useWorldSpace;
+        line.positionCount = positions.Length;
+
+        line.startColor = color;
+        line.endColor = color;
+
+        line.SetPositions(positions);
+        line.material = GameController.instance.lineRendererMaterial;
+
+        AnimationCurve curve = new AnimationCurve();
+        curve.AddKey(0, lineWidth);
+        curve.AddKey(1, lineWidth);
+
+        line.widthCurve = curve;
+
+        return line;
+    }
+
     public static GameController instance;
 
     public GameController(): base()
@@ -46,6 +119,9 @@ public class GameController : MonoBehaviour
 
     [Header("Game Over Settings")]
     public string gameOverSceneName = "FailedScene";
+
+    [Header("Line Settings")]
+    public Material lineRendererMaterial;
 
     public int Money
     {
@@ -121,6 +197,32 @@ public class GameController : MonoBehaviour
 
         SetupWaves();
         StartCoroutine("SpawnWaves");
+
+        CreateTowerPlacementLineRenderers();
+        CreateEnemyPathLineRenderer();
+    }
+
+    private void CreateTowerPlacementLineRenderers()
+    {
+        for(int x = 0; x < towerGrid.Width; x++)
+        {
+            for (int y = 0; y < towerGrid.Height; y++) {
+                if(!towerGrid.isGridPosDisabled(new TowerGrid.Position(x, y)))
+                {
+                    DrawSquare(gridOrigin, towerGrid.toWorldPosition(new TowerGrid.Position(x, y)) + new Vector3(.5f, .5f, 0), .5f, .02f, Color.green, true);
+                }
+            }
+        }
+    }
+
+    private void CreateEnemyPathLineRenderer()
+    {
+        Vector3[] positions = new Vector3[enemyPath.Length];
+        for(int i = 0; i < enemyPath.Length; i++)
+        {
+            positions[i] = enemyPath[i].transform.position;
+        }
+        DrawPath(gridOrigin, positions, .02f, Color.red, true);
     }
 
     // Update is called once per frame
