@@ -28,6 +28,12 @@ public class HackableTower : TowerBehavior
         {
             return isHacked;
         }
+
+        set
+        {
+            isHacked = value;
+            OnUnhacked?.Invoke();
+        }
     }
 
     // Start is called before the first frame update

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,7 +12,7 @@ public class WebsiteTower : HackableTower
     {
         base.Start();
 
-        GameController.instance.OnRoundBegin += (roundNum) =>
+        GameController.instance.OnRoundEnd += (roundNum) =>
         {
             if (!isPlaced)
                 return;
@@ -30,14 +30,15 @@ public class WebsiteTower : HackableTower
                         }
                     }
                 }
-
-                GameController.instance.Money += Mathf.RoundToInt(AdjustForDistance((transform.position - enemyStartTransform.position).magnitude, moneyAmount) * databaseMultiplier);
+                int moneyToAdd = Mathf.RoundToInt(AdjustForDistance((transform.position - enemyStartTransform.position).magnitude, moneyAmount) * databaseMultiplier);
+                GameController.instance.Money += moneyToAdd;
+                GameController.EmitText(gameObject, "+ " + ((Int32)moneyToAdd).ToString("C"), 1f, Color.green, 50, new Vector3(0, .5f));
             }
         };
     }
 
-    int AdjustForDistance(float distance, float moneyAmount)
+    float AdjustForDistance(float distance, float moneyAmount)
     {
-        return Mathf.RoundToInt(distance / 20 * moneyAmount);
+        return distance / 20 * moneyAmount;
     }
 }

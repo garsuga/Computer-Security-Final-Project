@@ -80,6 +80,21 @@ public class GameController : MonoBehaviour
         return line;
     }
 
+    public static GameObject EmitText(GameObject container, string text, float lifetime, Color color, int fontSize, Vector3 velocity)
+    {
+        GameObject emittedText = Instantiate<GameObject>(instance.emittedTextPrefab);
+        emittedText.transform.parent = container.transform;
+        emittedText.transform.localPosition = Vector3.zero;
+
+        EmittedTextBehavior emittedController = emittedText.GetComponent<EmittedTextBehavior>();
+        emittedController.text = text;
+        emittedController.lifetimeSeconds = lifetime;
+        emittedController.color = color;
+        emittedController.fontSize = fontSize;
+        emittedController.velocity = velocity;
+        return emittedText;
+    }
+
     public static GameController instance;
 
     public GameController(): base()
@@ -120,8 +135,10 @@ public class GameController : MonoBehaviour
     [Header("Game Over Settings")]
     public string gameOverSceneName = "FailedScene";
 
-    [Header("Line Settings")]
+    [Header("Display Settings")]
     public Material lineRendererMaterial;
+    public GameObject emittedTextPrefab;
+    public WaveInfoController waveInfoController;
 
     public int Money
     {
@@ -338,12 +355,15 @@ public class GameController : MonoBehaviour
         waves = new Wave[] { wave1, wave2 };
     }
 
+    private Queue<GameObject> enemiesSpawnedInWave = new Queue<GameObject>();
+
     IEnumerator SpawnWaves()
     {
         int waveNum = 0;
         foreach(Wave wave in waves) {
             waveNum++;
             OnRoundBegin?.Invoke(waveNum);
+            waveInfoController.WaveNum = waveNum;
             // single wave
             while(wave.HasEnemies)
             {
@@ -353,13 +373,28 @@ public class GameController : MonoBehaviour
                 foreach(GameObject prefab in nextSet)
                 {
                     // single spawn
-                    Instantiate(prefab, Vector3.zero, Quaternion.identity);
+                    GameObject newEnemy = Instantiate(prefab, Vector3.zero, Quaternion.identity);
+                    enemiesSpawnedInWave.Enqueue(newEnemy);
+
                     yield return new WaitForSeconds(timePerTick / nextSet.Count);
                 }
 
                 yield return new WaitForSeconds(timeBetweenTicks);
             }
+
+            while(enemiesSpawnedInWave.Count > 0)
+            {
+                while(enemiesSpawnedInWave.Count > 0 && enemiesSpawnedInWave.Peek() == null)
+                {
+                    enemiesSpawnedInWave.Dequeue();
+                }
+
+                yield return new WaitForSeconds(.5f);
+            }
+
             OnRoundEnd?.Invoke(waveNum);
+
+            waveInfoController.StartTimer(timeBetweenWaves);
 
             yield return new WaitForSeconds(timeBetweenWaves);
         }

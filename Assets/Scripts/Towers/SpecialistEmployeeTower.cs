@@ -14,6 +14,10 @@ public class SpecialistEmployeeTower : TowerBehavior
     public float projectileSpeed = 10f;
     public float projectileDamage = 35f;
 
+    [Header("Tower Repair Settings")]
+    public float repairTimeSeconds = 2;
+    public bool isRepairingTower = false;
+
     // Start is called before the first frame update
     public override void Start()
     {
@@ -42,6 +46,18 @@ public class SpecialistEmployeeTower : TowerBehavior
             return true;
         };
         shootBehavior.OnTargetChange += (newTarget) => turnTowardsBehavior.target = newTarget;
+    }
+
+    public IEnumerator RepairTower(HackableTower tower)
+    {
+        if (isRepairingTower)
+            throw new System.Exception("Cannot repair tower, already repairing!");
+        LineRenderer renderer = GameController.DrawPath(tower.gameObject, new Vector3[] { tower.transform.position, transform.position }, .035f, Color.green, true);
+        isRepairingTower = true;
+        yield return new WaitForSeconds(repairTimeSeconds);
+        isRepairingTower = false;
+        tower.Hacked = false;
+        Destroy(renderer);
     }
 
     // Update is called once per frame

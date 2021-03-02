@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +16,7 @@ public class CrypoMiningTower : TowerBehavior
             if (!isPlaced)
                 return;
             GameController.instance.Money += moneyAmount;
+            GameController.EmitText(gameObject, "+ " + ((Int32)moneyAmount).ToString("C"), 1f, Color.green, 50, new Vector3(0,.5f));
         };
     }
 }
