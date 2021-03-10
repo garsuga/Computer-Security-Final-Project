@@ -2805,6 +2805,34 @@ PrefabInstance:
       propertyPath: toDisableWhenPlaced.Array.data[0]
       value: 
       objectReference: {fileID: 860180007}
+    - target: {fileID: 3767480439982787500, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.08387538
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767480439982787500, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.07673551
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767480439982787500, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767480439982787500, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.112
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767480439982787501, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 8a2e75249f79d164ba1b74c67ef4d933, type: 3}
+    - target: {fileID: 3767480439982787501, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3767480439982787501, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3767480440431891879, guid: cfaff799ecaae074daee98d8f8baf45d, type: 3}
       propertyPath: m_Name
       value: Basic Employee Tower
@@ -3079,6 +3107,34 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571393, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.072974525
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571393, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.074550286
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571393, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0404
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571393, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.0914
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571398, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 0e779ff048505754286b27fb2478ab61, type: 3}
+    - target: {fileID: 7318425281548571398, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7318425281548571398, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7318425281664003477, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
       propertyPath: towerCostText
       value: 
@@ -3108,6 +3164,42 @@ PrefabInstance:
       propertyPath: towerShopUiParent
       value: 
       objectReference: {fileID: 1687269704}
+    - target: {fileID: 7332539939658931697, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.080531366
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931697, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.077140756
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931697, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0.011
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931697, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1155
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931702, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: cfe6cead2d603af4a8bb582bb2dead59, type: 3}
+    - target: {fileID: 7332539939658931702, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_Color.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931702, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931702, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7332539939658931702, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
+      propertyPath: m_Color.r
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7332539939665521805, guid: a2e383e396df77a4a90c8ed8178f0a6b, type: 3}
       propertyPath: m_Name
       value: Specialist Employee Tower
@@ -3233,5 +3325,33 @@ PrefabInstance:
       propertyPath: enemyStartTransform
       value: 
       objectReference: {fileID: 1916431692}
+    - target: {fileID: 9054986233184474725, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.07818006
+      objectReference: {fileID: 0}
+    - target: {fileID: 9054986233184474725, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.07593563
+      objectReference: {fileID: 0}
+    - target: {fileID: 9054986233184474725, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.0004
+      objectReference: {fileID: 0}
+    - target: {fileID: 9054986233184474725, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.1046
+      objectReference: {fileID: 0}
+    - target: {fileID: 9054986233184474726, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: f98d805e3dfa2e54aa768aefdaa5f66d, type: 3}
+    - target: {fileID: 9054986233184474726, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_Color.b
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9054986233184474726, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
+      propertyPath: m_Color.g
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 91723acc6aa8c694e9b69b2843af1e31, type: 3}
