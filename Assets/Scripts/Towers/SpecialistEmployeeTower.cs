@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class SpecialistEmployeeTower : TowerBehavior
@@ -16,7 +17,7 @@ public class SpecialistEmployeeTower : TowerBehavior
 
     [Header("Tower Repair Settings")]
     public float repairTimeSeconds = 2;
-    public bool isRepairingTower = false;
+    private bool isRepairingTower = false;
 
     // Start is called before the first frame update
     public override void Start()
@@ -24,18 +25,20 @@ public class SpecialistEmployeeTower : TowerBehavior
         base.Start();
         TurnTowardsBehavior turnTowardsBehavior = GetComponentInParent<TurnTowardsBehavior>();
 
-        shootBehavior.CanShoot += (timeSinceLastShot, projectilesActive) => {
+        GameObject target = null;
+
+        shootObjectDetection.CanShoot += (timeSinceLastShot, projectilesActive) => {
             return timeSinceLastShot > shootInterval && (maxProjectilesActive < 0 || projectilesActive < maxProjectilesActive);
         };
-        shootBehavior.CreateProjectile += () => {
+        shootObjectDetection.CreateProjectile += () => {
             GameObject projectile = Instantiate<GameObject>(projectilePrefab);
             projectile.transform.position = projectileTransform.transform.position;
             projectile.transform.rotation = projectileTransform.transform.rotation;
             Rigidbody2D rigidbody = projectile.GetComponent<Rigidbody2D>();
-            rigidbody.velocity = projectile.transform.right * projectileSpeed;
+            rigidbody.velocity = (target.transform.position - projectile.transform.position).normalized * projectileSpeed;
             return projectile;
         };
-        shootBehavior.OnHit += (projectile, hitObject) =>
+        shootObjectDetection.OnHit += (projectile, hitObject) =>
         {
             //Debug.Log("Projectile Hit");
             EnemyBehavior enemy = hitObject.GetComponent<EnemyBehavior>();
@@ -45,18 +48,43 @@ public class SpecialistEmployeeTower : TowerBehavior
             enemy.Health -= projectileDamage;
             return true;
         };
-        shootBehavior.OnTargetChange += (newTarget) => turnTowardsBehavior.target = newTarget;
+        shootObjectDetection.OnTargetChange += (newTarget) =>
+        {
+            turnTowardsBehavior.target = newTarget;
+            target = newTarget;
+        };
+
+        GameController.instance.OnRoundEnd += (roundNum) =>
+        {
+            Debug.Log("Round End Event For Specialist");
+            if (this != null && this.isPlaced)
+            {
+                Debug.Log("Specialist is alive.");
+                foreach (HackableTower ht in FindObjectsOfType<HackableTower>().OrderBy(e => Random.value))
+                {
+                    Debug.Log("Specialist trying to unhack tower.");
+                    if(ht != null && ht.Hacked)
+                    {
+                        Debug.Log("Specialist unhacked tower.");
+                        StartCoroutine(RepairTower(ht));
+                        return;
+                    }
+                }
+            }
+        };
     }
 
     public IEnumerator RepairTower(HackableTower tower)
     {
         if (isRepairingTower)
             throw new System.Exception("Cannot repair tower, already repairing!");
-        LineRenderer renderer = GameController.DrawPath(tower.gameObject, new Vector3[] { tower.transform.position, transform.position }, .035f, Color.green, true);
+
+        tower.Hacked = false;
+
+        LineRenderer renderer = GameController.DrawPath(tower.gameObject, Vector3.zero, new Vector3[] { tower.transform.position, transform.position }, .035f, Color.green, true);
         isRepairingTower = true;
         yield return new WaitForSeconds(repairTimeSeconds);
         isRepairingTower = false;
-        tower.Hacked = false;
         Destroy(renderer);
     }
 

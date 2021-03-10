@@ -15,8 +15,8 @@ GameObject:
   - component: {fileID: 3223028901231219307}
   - component: {fileID: -3144997404259389486}
   m_Layer: 0
-  m_Name: RedEnemy
-  m_TagString: Enemy
+  m_Name: Virus
+  m_TagString: Exposed Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -124,7 +124,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.13, y: 0.13}
+  m_Size: {x: 0.35, y: 0.35}
   m_EdgeRadius: 0
 --- !u!50 &3223028901231219307
 Rigidbody2D:

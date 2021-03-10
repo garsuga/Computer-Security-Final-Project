@@ -32,7 +32,7 @@ public class WebsiteTower : HackableTower
                 }
                 int moneyToAdd = Mathf.RoundToInt(AdjustForDistance((transform.position - enemyStartTransform.position).magnitude, moneyAmount) * databaseMultiplier);
                 GameController.instance.Money += moneyToAdd;
-                GameController.EmitText(gameObject, "+ " + ((Int32)moneyToAdd).ToString("C"), 1f, Color.green, 50, new Vector3(0, .5f));
+                GameController.EmitText(gameObject, Vector3.zero, "+ " + ((Int32)moneyToAdd).ToString("C"), 1f, Color.green, 50, new Vector3(0, .5f));
             }
         };
     }

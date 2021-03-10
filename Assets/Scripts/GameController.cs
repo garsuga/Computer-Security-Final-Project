@@ -13,7 +13,7 @@ public class GameController : MonoBehaviour
     /// <param name="container">GameObject to create LineRenderer on</param>
     /// <param name="radius">Circle radius in relative space</param>
     /// <param name="lineWidth">Line width in relative space</param>
-    public static LineRenderer DrawCircle(GameObject container, float radius, float lineWidth, Color color, bool useWorldSpace)
+    public static LineRenderer DrawCircle(GameObject container, Vector3 offset, float radius, float lineWidth, Color color, bool useWorldSpace)
     {
         int segments = 360;
         Vector3[] points = new Vector3[segments + 1];
@@ -24,7 +24,7 @@ public class GameController : MonoBehaviour
             points[i] = new Vector3(Mathf.Sin(rad) * radius, Mathf.Cos(rad) * radius);
         }
 
-        return DrawPath(container, points, lineWidth, color, useWorldSpace);
+        return DrawPath(container, offset, points, lineWidth, color, useWorldSpace);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ public class GameController : MonoBehaviour
             new Vector3(-radius, -radius) + offset
         };
 
-        return DrawPath(container, points, lineWidth, color, useWorldSpace);
+        return DrawPath(container, offset, points, lineWidth, color, useWorldSpace);
     }
 
     /// <summary>
@@ -55,7 +55,7 @@ public class GameController : MonoBehaviour
     /// <param name="positions">Positions of LineRenderer</param>
     /// <param name="lineWidth">Line width in relative space</param>
     /// <returns></returns>
-    public static LineRenderer DrawPath(GameObject container, Vector3[] positions, float lineWidth, Color color, bool useWorldSpace)
+    public static LineRenderer DrawPath(GameObject container, Vector3 offset, Vector3[] positions, float lineWidth, Color color, bool useWorldSpace)
     {
         GameObject containerVirtChild = new GameObject("LineRenderer Holder");
         containerVirtChild.transform.parent = container.transform;
@@ -80,11 +80,11 @@ public class GameController : MonoBehaviour
         return line;
     }
 
-    public static GameObject EmitText(GameObject container, string text, float lifetime, Color color, int fontSize, Vector3 velocity)
+    public static GameObject EmitText(GameObject container, Vector3 offset, string text, float lifetime, Color color, int fontSize, Vector3 velocity)
     {
         GameObject emittedText = Instantiate<GameObject>(instance.emittedTextPrefab);
-        emittedText.transform.parent = container.transform;
-        emittedText.transform.localPosition = Vector3.zero;
+        emittedText.transform.parent = container != null ? container.transform : null;
+        emittedText.transform.localPosition = offset;
 
         EmittedTextBehavior emittedController = emittedText.GetComponent<EmittedTextBehavior>();
         emittedController.text = text;
@@ -103,9 +103,10 @@ public class GameController : MonoBehaviour
     }
 
     [Header("Enemy References")]
-    public GameObject redEnemy;
-    public GameObject blueEnemy;
-
+    public GameObject virusEnemy;
+    public GameObject phishingEnemy;
+    public GameObject spamEnemy;
+    public GameObject mitmEnemy;
 
     [Header("Wave Settings")]
     public float timeBetweenWaves = 15f;
@@ -239,7 +240,7 @@ public class GameController : MonoBehaviour
         {
             positions[i] = enemyPath[i].transform.position;
         }
-        DrawPath(gridOrigin, positions, .02f, Color.red, true);
+        DrawPath(gridOrigin, Vector3.zero, positions, .02f, Color.red, true);
     }
 
     // Update is called once per frame
@@ -338,21 +339,29 @@ public class GameController : MonoBehaviour
 
     void SetupWaves()
     {
+        Dictionary<GameObject, int> wave0Enemies = new Dictionary<GameObject, int>();
+        
+        wave0Enemies.Add(mitmEnemy, 1);
+
+        wave0Enemies.Add(virusEnemy, 50);
+
+        Wave wave0 = new Wave(wave0Enemies, 10);
+
         Dictionary<GameObject, int> wave1Enemies = new Dictionary<GameObject, int>();
 
-        wave1Enemies.Add(redEnemy, 10);
-        wave1Enemies.Add(blueEnemy, 5);
+        wave1Enemies.Add(virusEnemy, 10);
+        wave1Enemies.Add(phishingEnemy, 5);
 
         Wave wave1 = new Wave(wave1Enemies, 5);
 
         Dictionary<GameObject, int> wave2Enemies = new Dictionary<GameObject, int>();
 
-        wave2Enemies.Add(redEnemy, 20);
-        wave2Enemies.Add(blueEnemy, 15);
+        wave2Enemies.Add(virusEnemy, 20);
+        wave2Enemies.Add(phishingEnemy, 15);
 
         Wave wave2 = new Wave(wave2Enemies, 8);
 
-        waves = new Wave[] { wave1, wave2 };
+        waves = new Wave[] { wave0, wave1, wave2 };
     }
 
     private Queue<GameObject> enemiesSpawnedInWave = new Queue<GameObject>();

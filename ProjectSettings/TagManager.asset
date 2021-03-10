@@ -5,9 +5,11 @@ TagManager:
   serializedVersion: 2
   tags:
   - Tower
-  - Enemy
   - Database
   - Hide When Tower Active
+  - Phishing Attack
+  - Exposed Enemy
+  - Spam Request
   layers:
   - Default
   - TransparentFX

@@ -6,6 +6,14 @@ public abstract class EnemyBehavior : MonoBehaviour
 {
     public float maxHealth = 20;
 
+    public delegate void EnemyDeathEvent();
+
+    public EnemyDeathEvent OnEnemyDeath
+    {
+        get;
+        set;
+    }
+
     private float _health;
     public float Health
     {
@@ -17,6 +25,7 @@ public abstract class EnemyBehavior : MonoBehaviour
             if(value <= 0)
             {
                 isEarlyDestroyed = true;
+                OnEnemyDeath?.Invoke();
                 Destroy(this.gameObject);
             }
             _health = value;

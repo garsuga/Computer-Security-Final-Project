@@ -1,16 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class Wave
 {
-    private Dictionary<GameObject, int> enemySets;
+    //private Dictionary<GameObject, int> enemySets;
+    private List<GameObject> flattenedWave;
 
     private int enemiesPerTick;
 
     public Wave(Dictionary<GameObject, int> enemySets, int enemiesPerTick)
     {
-        this.enemySets = enemySets;
+        this.flattenedWave = Flatten(enemySets);
         this.enemiesPerTick = enemiesPerTick;
     }
 
@@ -20,8 +22,22 @@ public class Wave
     public bool HasEnemies
     {
         get {
-            return enemySets.Count > 0; 
+            return flattenedWave.Count > 0;
         }
+    }
+
+    private List<GameObject> Flatten(Dictionary<GameObject, int> enemySets)
+    {
+        List<GameObject> flat = new List<GameObject>();
+        foreach(GameObject key in enemySets.Keys)
+        {
+            for(int i = 0; i < enemySets[key]; i++)
+            {
+                flat.Add(key);
+            }
+        }
+
+        return new List<GameObject>(flat.OrderBy(e => Random.value));
     }
 
     /// <summary>
@@ -32,30 +48,10 @@ public class Wave
     {
         List<GameObject> nextSpawn = new List<GameObject>();
 
-        GameObject[] keysArr = new GameObject[enemySets.Keys.Count];
-        enemySets.Keys.CopyTo(keysArr, 0);
-
-        List<GameObject> keys = new List<GameObject>(keysArr);
-
-        for(int i = 0; i < enemiesPerTick && enemySets.Count > 0; i++)
+        for(int i = 0; i < enemiesPerTick && flattenedWave.Count > 0; i++)
         {
-            int rIndex = (int)(Random.value * enemySets.Keys.Count);
-
-            GameObject nextEnemy = keys[rIndex];
-
-            int leftInWave = enemySets[nextEnemy];
-            leftInWave--;
-
-            enemySets.Remove(nextEnemy);
-            if (leftInWave > 0)
-            {
-                enemySets.Add(nextEnemy, leftInWave);
-            } else
-            {
-                keys.Remove(nextEnemy);
-            }
-
-            nextSpawn.Add(nextEnemy);
+            nextSpawn.Add(flattenedWave[0]);
+            flattenedWave.RemoveAt(0);
         }
 
         return nextSpawn;

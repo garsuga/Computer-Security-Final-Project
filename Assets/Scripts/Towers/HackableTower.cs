@@ -8,6 +8,7 @@ public class HackableTower : TowerBehavior
     public float chanceToBeHacked = 1f;
     private bool isHacked = false;
     public GameObject hackedUiParent;
+    public RangeObjectDetectionBehavior hackObjectDetection;
 
     public delegate void OnHackedEvent(GameObject hackedBy);
     public delegate void OnUnhackedEvent();
@@ -32,7 +33,8 @@ public class HackableTower : TowerBehavior
         set
         {
             isHacked = value;
-            OnUnhacked?.Invoke();
+            if(!isHacked)
+                OnUnhacked?.Invoke();
         }
     }
 
@@ -41,8 +43,9 @@ public class HackableTower : TowerBehavior
     {
         base.Start();
 
-        shootBehavior.OnObjectEnterRange += (enemy) => TryGetHacked(enemy);
+        hackObjectDetection.OnObjectEnterRange += (enemy) => TryGetHacked(enemy);
         OnHacked += (enemy) => hackedUiParent.SetActive(true);
+        OnHacked += (enemy) => GameController.EmitText(null, gameObject.transform.position, "Hacked!", 1f, Color.red, 50, new Vector3(0, .5f));
         OnUnhacked += () => hackedUiParent.SetActive(false);
     }
 
@@ -51,7 +54,7 @@ public class HackableTower : TowerBehavior
         if (enabled && Random.value < chanceToBeHacked)
         {
             Debug.Log("Tower was hacked!");
-            enabled = false;
+            //enabled = false;
             isHacked = true;
             OnHacked?.Invoke(enemy);
         }

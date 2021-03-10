@@ -1,8 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
-public class TowerShootBehavior : MonoBehaviour
+public class RangeObjectDetectionBehavior : MonoBehaviour
 {
     /// <summary>
     /// Event called to create new projectile
@@ -30,6 +31,8 @@ public class TowerShootBehavior : MonoBehaviour
     public delegate void OnTargetChangeHandler(GameObject target);
 
     public delegate void ObjectRangeHandler(GameObject obj);
+
+    public delegate void DoShotNoProjectile();
 
     /// <summary>
     /// Tags which can be targeted
@@ -62,6 +65,10 @@ public class TowerShootBehavior : MonoBehaviour
         }
     }
 
+    public DoShotNoProjectile DoShot
+    {
+        get;set;
+    }
 
     public CreateProjectileHandler CreateProjectile
     {
@@ -96,9 +103,20 @@ public class TowerShootBehavior : MonoBehaviour
     
 
     private GameObject currentTarget = null;
-    private List<GameObject> withinRange = new List<GameObject>();
+
+
+    private List<GameObject> allWithinRange = new List<GameObject>();
+    private List<GameObject> preValidWithinRange = new List<GameObject>();
     private float timeLastShot;
     private int projectilesActive = 0;
+    
+    public List<GameObject> ValidEnemiesInRange
+    {
+        get
+        {
+            return new List<GameObject>(preValidWithinRange);
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -110,11 +128,12 @@ public class TowerShootBehavior : MonoBehaviour
     void Update()
     {
         // check required events
-        if(CreateProjectile == null || CanShoot == null || OnHit == null)
+        if(((CreateProjectile == null || OnHit == null) && DoShot == null) || CanShoot == null)
         {
             return;
         }
-        if(currentTarget == null)
+        // if the enemy is gone or its tag changed to something no longer targetable
+        if(currentTarget == null || !ValidTags.Contains(currentTarget.tag))
         {
             SetNextTargetIfPossible();
         }
@@ -124,27 +143,51 @@ public class TowerShootBehavior : MonoBehaviour
             if(CanShoot(Time.realtimeSinceStartup - timeLastShot, projectilesActive))
             {
                 timeLastShot = Time.realtimeSinceStartup;
-                GameObject projectile = CreateProjectile();
-                ProjectileHookBehavior projectileHook = projectile.AddComponent<ProjectileHookBehavior>();
-                projectileHook.enabled = true;
-                projectileHook.OnHit += (hitObject, hitCollider) => { 
-                    if (IsValidTarget(hitObject, hitCollider)) 
-                        return OnHit(projectile, hitObject);
+                if (CreateProjectile != null)
+                {
+                    Debug.Log("Shoot script creating projectile.");
+                    GameObject projectile = CreateProjectile();
+                    ProjectileHookBehavior projectileHook = projectile.AddComponent<ProjectileHookBehavior>();
+                    projectileHook.enabled = true;
+                    projectileHook.OnHit += (hitObject, hitCollider) =>
+                    {
+                        if (IsValidTarget(hitObject, hitCollider))
+                            return OnHit(projectile, hitObject);
 
-                    return false;
-                };
-                projectileHook.OnDestroy += (reason) => projectilesActive--;
+                        return false;
+                    };
+                    projectileHook.OnDestroy += (reason) => projectilesActive--;
+                } else
+                {
+                    Debug.Log("Shoot script running callable.");
+                    DoShot();
+                }
             }
         }
     }
 
     private void SetNextTargetIfPossible()
     {
-        while(withinRange.Count > 0)
+        while(allWithinRange.Count > 0)
         {
-            GameObject candidate = withinRange[withinRange.Count - 1];
-            withinRange.RemoveAt(withinRange.Count - 1);
-            if (candidate != null && candidate.activeSelf)
+            List<GameObject> possibleNextTargets = new List<GameObject>(allWithinRange.OrderBy(e => Random.value));
+
+            GameObject candidate = null;
+
+            foreach (GameObject target in possibleNextTargets)
+            {
+                if(currentTarget != target && target != null && IsValidTarget(target, target.GetComponent<Collider2D>()))
+                {
+                    candidate = target;
+                    break;
+                }
+            }
+
+            if (candidate == null)
+                return;
+
+            //allWithinRange.Remove(candidate);
+            if (candidate.activeSelf)
             {
                 currentTarget = candidate;
                 OnTargetChange?.Invoke(candidate);
@@ -177,20 +220,28 @@ public class TowerShootBehavior : MonoBehaviour
         //Debug.Log("Collision has entered tower collider");
         GameObject hit = collision.gameObject;
 
+        allWithinRange.Add(hit);
+
         if (!IsValidTarget(hit, collision))
             return;
-
-        withinRange.Add(hit);
+        
+        preValidWithinRange.Add(hit);
         OnObjectEnterRange?.Invoke(hit);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         //Debug.Log("Collision has exited tower collider");
-        if (withinRange.Contains(collision.gameObject))
+        if (allWithinRange.Contains(collision.gameObject))
         {
-            withinRange.Remove(collision.gameObject);
-            OnObjectLeaveRange?.Invoke(collision.gameObject);
+            allWithinRange.Remove(collision.gameObject);
+            if(IsValidTarget(collision.gameObject, collision))
+                OnObjectLeaveRange?.Invoke(collision.gameObject);
+        }
+
+        if (preValidWithinRange.Contains(collision.gameObject)) 
+        {
+            preValidWithinRange.Remove(collision.gameObject);
         }
 
         if(currentTarget == collision.gameObject)

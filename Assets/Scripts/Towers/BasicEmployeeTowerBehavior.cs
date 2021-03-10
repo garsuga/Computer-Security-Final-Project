@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BasicEmployeeTowerBehavior : TowerBehavior
+public class BasicEmployeeTowerBehavior : HackableTower
 {
     [Header("Shoot Settings")]
     public float shootInterval = 5f;
@@ -20,18 +20,20 @@ public class BasicEmployeeTowerBehavior : TowerBehavior
         base.Start();
         TurnTowardsBehavior turnTowardsBehavior = GetComponentInParent<TurnTowardsBehavior>();
 
-        shootBehavior.CanShoot += (timeSinceLastShot, projectilesActive) => {
+        GameObject target = null;
+
+        shootObjectDetection.CanShoot += (timeSinceLastShot, projectilesActive) => {
             return timeSinceLastShot > shootInterval && (maxProjectilesActive < 0 || projectilesActive < maxProjectilesActive);
         };
-        shootBehavior.CreateProjectile += () => {
+        shootObjectDetection.CreateProjectile += () => {
             GameObject projectile = Instantiate<GameObject>(projectilePrefab);
             projectile.transform.position = projectileTransform.transform.position;
             projectile.transform.rotation = projectileTransform.transform.rotation;
             Rigidbody2D rigidbody = projectile.GetComponent<Rigidbody2D>();
-            rigidbody.velocity = projectile.transform.right * projectileSpeed;
+            rigidbody.velocity = (target.transform.position - projectile.transform.position).normalized * projectileSpeed;
             return projectile;
         };
-        shootBehavior.OnHit += (projectile, hitObject) =>
+        shootObjectDetection.OnHit += (projectile, hitObject) =>
         {
             //Debug.Log("Projectile Hit");
             EnemyBehavior enemy = hitObject.GetComponent<EnemyBehavior>();
@@ -41,7 +43,21 @@ public class BasicEmployeeTowerBehavior : TowerBehavior
             enemy.Health -= projectileDamage;
             return true;
         };
-        shootBehavior.OnTargetChange += (newTarget) => turnTowardsBehavior.target = newTarget;
+        shootObjectDetection.OnTargetChange += (newTarget) => 
+        {
+            turnTowardsBehavior.target = newTarget;
+            target = newTarget;
+        };
+
+        OnHacked += (hackedBy) =>
+        {
+            shootObjectDetection.enabled = false;
+        };
+
+        OnUnhacked += () =>
+        {
+            shootObjectDetection.enabled = true;
+        };
     }
 
     // Update is called once per frame

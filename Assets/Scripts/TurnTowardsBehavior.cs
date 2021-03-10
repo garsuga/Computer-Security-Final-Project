@@ -16,7 +16,7 @@ public class TurnTowardsBehavior : MonoBehaviour
     {
         if (target == null)
             return;
-        LookAt2D(transform, target.transform.position);
+        //LookAt2D(transform, target.transform.position);
     }
 
     // https://forum.unity.com/threads/2d-look-at-object-disappears.390105/
