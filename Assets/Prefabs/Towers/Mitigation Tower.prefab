@@ -293,7 +293,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e7e8c2d7b36c5924087026f2f4af0cc5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 1000
+  towerCost: 2500
   towerCostText: {fileID: 5242805331979467789}
   towerName: DDoS Mitigation
   towerDescription: DDoS is an attack where many different clients spam requests

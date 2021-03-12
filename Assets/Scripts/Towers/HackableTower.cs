@@ -51,12 +51,13 @@ public class HackableTower : TowerBehavior
 
     void TryGetHacked(GameObject enemy)
     {
-        if (enabled && Random.value < chanceToBeHacked)
+        if (enabled && !Hacked && Random.value < chanceToBeHacked)
         {
             Debug.Log("Tower was hacked!");
             //enabled = false;
             isHacked = true;
             OnHacked?.Invoke(enemy);
+            Destroy(enemy);
         }
     }
 }

@@ -56,16 +56,12 @@ public class SpecialistEmployeeTower : TowerBehavior
 
         GameController.instance.OnRoundEnd += (roundNum) =>
         {
-            Debug.Log("Round End Event For Specialist");
             if (this != null && this.isPlaced)
             {
-                Debug.Log("Specialist is alive.");
                 foreach (HackableTower ht in FindObjectsOfType<HackableTower>().OrderBy(e => Random.value))
                 {
-                    Debug.Log("Specialist trying to unhack tower.");
                     if(ht != null && ht.Hacked)
                     {
-                        Debug.Log("Specialist unhacked tower.");
                         StartCoroutine(RepairTower(ht));
                         return;
                     }

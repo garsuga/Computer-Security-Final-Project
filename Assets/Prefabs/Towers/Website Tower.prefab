@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa490f686514f24cbfe1ab2714e4f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 1000
+  towerCost: 850
   towerCostText: {fileID: 2682753419642851000}
   towerName: Website
   towerDescription: Websites are vulnerable to attacks but can make much more money

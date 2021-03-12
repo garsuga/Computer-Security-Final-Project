@@ -95,6 +95,11 @@ public class GameController : MonoBehaviour
         return emittedText;
     }
 
+    public GameObject AlertText(string text, Color color)
+    {
+        return EmitText(this.waveAlertTransform, Vector3.zero, text, 1f, color, 50, new Vector3(0, .5f));
+    }
+
     public static GameController instance;
 
     public GameController(): base()
@@ -140,6 +145,12 @@ public class GameController : MonoBehaviour
     public Material lineRendererMaterial;
     public GameObject emittedTextPrefab;
     public WaveInfoController waveInfoController;
+    public GameObject waveAlertTransform;
+
+    [Header("Difficulty Settings")]
+    public float enemyScaleBase = 1.2f;
+    public float speedScaleBase = 1.2f;
+    public float tickScaleBase = 0.8f;
 
     public int Money
     {
@@ -160,8 +171,9 @@ public class GameController : MonoBehaviour
     private TowerGrid towerGrid;
     private MouseObserverBevahior mouseObserver;
     public GameObject[] enemyPath = new GameObject[0];
-    public Wave[] waves = new Wave[0];
+    public Dictionary<int, WaveSetting[]> waveMap;
     private Camera mainCamera;
+    public int waveNum = 0;
 
     private GameObject currentTowerHolding;
 
@@ -313,7 +325,6 @@ public class GameController : MonoBehaviour
         if (currentTowerHolding != null) {
             if (isOver)
             {
-                Debug.Log("Mouse drag finish.");
                 Vector3 worldPos = mainCamera.ScreenToWorldPoint(currentPosScreen);
 
                 TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);
@@ -348,61 +359,141 @@ public class GameController : MonoBehaviour
 
     void SetupWaves()
     {
-        Dictionary<GameObject, int> wave0Enemies = new Dictionary<GameObject, int>();
-        
-        wave0Enemies.Add(mitmEnemy, 1);
+        /**
+         * Dictionary int -> Wave...
+         * 
+         * The integer is the first wave which can spawn from each group.
+         * This is used to lock difficult attacks behind time restrictions.
+         * 
+         * Each wave has a Dictionary GameObject -> int
+         * The integer is the count of enemies and the GameObject is the prefab to spawn.
+         * Each wave accepts a 'enemies per tick' and Callable as well.
+         * 
+         * Callable is optional and allows code to be run each time that wave starts.
+         * The 'enemies per tick' dictates the relative rate enemies spawn.
+         * Ticks are scaled with difficulty and become shorter.
+         */
+        waveMap = new Dictionary<int, WaveSetting[]>()
+        {
+            { 0, new WaveSetting[]
+                {
+                    new WaveSetting("small-virus", new Dictionary<GameObject, int>()
+                    {
+                        { virusEnemy, 10 }
+                    }, 3, null),
+                    new WaveSetting("large-virus", new Dictionary<GameObject, int>()
+                    {
+                        { virusEnemy, 20 }
+                    }, 5, null),
+                    new WaveSetting("large-virus-mitm", new Dictionary<GameObject, int>()
+                    {
+                        { virusEnemy, 20 },
+                        { mitmEnemy, 1 }
+                    }, 4, null),
+                }
+            },
+            { 3, new WaveSetting[]
+                {
+                    new WaveSetting("small-virus-mitm-phishing", new Dictionary<GameObject, int>()
+                    {
+                        { mitmEnemy, 1 },
+                        { virusEnemy, 10 },
+                        { phishingEnemy, 1 }
+                    }, 3, null)
+                }
+            },
+            { 5, new WaveSetting[]
+                {
+                    new WaveSetting("large-phishing", new Dictionary<GameObject, int>()
+                    {
+                        { phishingEnemy, 10 }
+                    }, 3, () => AlertText("Phishing Scams!", Color.red))
+                }
+            },
+            { 10, new WaveSetting[]
+                {
+                    new WaveSetting("large-ddos", new Dictionary<GameObject, int>()
+                    {
+                        { spamEnemy, 40 }
+                    }, 3, () => AlertText("DDoS Attack!", Color.red)),
+                }
+            },
+            { 15, new WaveSetting[]
+                {
+                    new WaveSetting("medium-ddos-small-virus-phishing", new Dictionary<GameObject, int>()
+                    {
+                        { virusEnemy, 10 },
+                        { spamEnemy, 30 },
+                        { phishingEnemy, 10 }
+                    }, 3, () => AlertText("DDoS Attack!", Color.red))
+                }
+            }
+        };
+    }
 
-        wave0Enemies.Add(virusEnemy, 50);
+    private List<WaveSetting> AggregateWaves(int nextWaveNum)
+    {
+        List<WaveSetting> selectedWaves = new List<WaveSetting>();
+        foreach (var kvp in waveMap)
+        {
+            if(kvp.Key <= nextWaveNum)
+            {
+                selectedWaves.AddRange(kvp.Value);
+            }
+        }
 
-        Wave wave0 = new Wave(wave0Enemies, 10);
+        return selectedWaves;
+    }
 
-        Dictionary<GameObject, int> wave1Enemies = new Dictionary<GameObject, int>();
-
-        wave1Enemies.Add(virusEnemy, 10);
-        wave1Enemies.Add(phishingEnemy, 5);
-
-        Wave wave1 = new Wave(wave1Enemies, 5);
-
-        Dictionary<GameObject, int> wave2Enemies = new Dictionary<GameObject, int>();
-
-        wave2Enemies.Add(virusEnemy, 20);
-        wave2Enemies.Add(phishingEnemy, 15);
-
-        Wave wave2 = new Wave(wave2Enemies, 8);
-
-        waves = new Wave[] { wave0, wave1, wave2 };
+    private WaveSetting SelectWave(int waveNum)
+    {
+        List<WaveSetting> agg = AggregateWaves(waveNum);
+        return agg[UnityEngine.Random.Range(0, agg.Count - 1)];
     }
 
     private Queue<GameObject> enemiesSpawnedInWave = new Queue<GameObject>();
 
     IEnumerator SpawnWaves()
     {
-        int waveNum = 0;
-        foreach(Wave wave in waves) {
+        waveNum = 0;
+
+        while(true)
+        {
             waveNum++;
+
+            WaveSetting wave = SelectWave(waveNum);
+
+            Debug.Log("Begin Wave " + waveNum + " (" + wave.Name + ")");
+
             OnRoundBegin?.Invoke(waveNum);
             waveInfoController.WaveNum = waveNum;
-            // single wave
-            while(wave.HasEnemies)
+
+            //AlertText(wave.Name, Color.magenta);
+
+            wave.WaveCallable?.Invoke();
+
+            ScaledWave scaledWave = new ScaledWave(wave, Mathf.Pow(enemyScaleBase, waveNum - 1));
+
+            while (scaledWave.HasEnemies)
             {
-                List<GameObject> nextSet = wave.getNextSpawn();
+                List<GameObject> nextSet = scaledWave.GetNextSpawn();
 
                 // single tick
-                foreach(GameObject prefab in nextSet)
+                foreach (GameObject prefab in nextSet)
                 {
                     // single spawn
                     GameObject newEnemy = Instantiate(prefab, Vector3.zero, Quaternion.identity);
                     enemiesSpawnedInWave.Enqueue(newEnemy);
 
-                    yield return new WaitForSeconds(timePerTick / nextSet.Count);
+                    yield return new WaitForSeconds((timePerTick * Mathf.Pow(tickScaleBase, waveNum - 1)) / nextSet.Count);
                 }
 
-                yield return new WaitForSeconds(timeBetweenTicks);
+                yield return new WaitForSeconds(timeBetweenTicks * Mathf.Pow(tickScaleBase, waveNum - 1));
             }
 
-            while(enemiesSpawnedInWave.Count > 0)
+            while (enemiesSpawnedInWave.Count > 0)
             {
-                while(enemiesSpawnedInWave.Count > 0 && enemiesSpawnedInWave.Peek() == null)
+                while (enemiesSpawnedInWave.Count > 0 && enemiesSpawnedInWave.Peek() == null)
                 {
                     enemiesSpawnedInWave.Dequeue();
                 }

@@ -39,6 +39,6 @@ public class WebsiteTower : HackableTower
 
     float AdjustForDistance(float distance, float moneyAmount)
     {
-        return distance / 20 * moneyAmount;
+        return Mathf.Clamp(1 - (distance / 20f), 0, 1) * moneyAmount;
     }
 }

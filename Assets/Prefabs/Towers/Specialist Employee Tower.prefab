@@ -83,7 +83,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0aeaf8ec8fa61084baa1166515614c2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 1000
+  towerCost: 2500
   towerCostText: {fileID: 5732490019242387539}
   towerName: Security Specialist
   towerDescription: The security specialist is worth their extra cost in their increased
@@ -103,7 +103,6 @@ MonoBehaviour:
   projectileSpeed: 10
   projectileDamage: 35
   repairTimeSeconds: 2
-  isRepairingTower: 0
 --- !u!1 &7332539939658931696
 GameObject:
   m_ObjectHideFlags: 0

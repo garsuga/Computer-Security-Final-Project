@@ -145,7 +145,6 @@ public class RangeObjectDetectionBehavior : MonoBehaviour
                 timeLastShot = Time.realtimeSinceStartup;
                 if (CreateProjectile != null)
                 {
-                    Debug.Log("Shoot script creating projectile.");
                     GameObject projectile = CreateProjectile();
                     ProjectileHookBehavior projectileHook = projectile.AddComponent<ProjectileHookBehavior>();
                     projectileHook.enabled = true;
@@ -159,7 +158,6 @@ public class RangeObjectDetectionBehavior : MonoBehaviour
                     projectileHook.OnDestroy += (reason) => projectilesActive--;
                 } else
                 {
-                    Debug.Log("Shoot script running callable.");
                     DoShot();
                 }
             }

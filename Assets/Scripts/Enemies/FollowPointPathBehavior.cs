@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class FollowPointPathBehavior : MonoBehaviour
 {
-
-    GameController controller;
     public float speed;
 
     public float moveUpdateRate = .02f;
     // Start is called before the first frame update
     void Start()
     {
-        controller = GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>();
+        speed *= Mathf.Pow(GameController.instance.speedScaleBase, GameController.instance.waveNum - 1);
+
+        if (GameController.instance.enemyPath.Length > 0)
+            transform.position = GameController.instance.enemyPath[0].transform.position;
         StartCoroutine("MoveToTargets");
-        if(controller.enemyPath.Length > 0)
-            transform.position = controller.enemyPath[0].transform.position;
+        
     }
 
     // Update is called once per frame
@@ -26,15 +26,15 @@ public class FollowPointPathBehavior : MonoBehaviour
 
     IEnumerator MoveToTargets()
     {
-        for (int i = 0; i < controller.enemyPath.Length; i++)
+        for (int i = 0; i < GameController.instance.enemyPath.Length; i++)
         {
             while (true)
             {
-                Vector3 toMove = controller.enemyPath[i].transform.position - transform.position;
+                Vector3 toMove = GameController.instance.enemyPath[i].transform.position - transform.position;
 
                 if (toMove.magnitude < speed * moveUpdateRate)
                 {
-                    transform.position = controller.enemyPath[i].transform.position;
+                    transform.position = GameController.instance.enemyPath[i].transform.position;
                     break;
                 }
                 else
@@ -52,7 +52,7 @@ public class FollowPointPathBehavior : MonoBehaviour
 
     void OnMoveFinished()
     {
-        controller.OnEnemyExited?.Invoke(this.gameObject);
+        GameController.instance.OnEnemyExited?.Invoke(this.gameObject);
         Destroy(gameObject);
     }
 }

@@ -350,7 +350,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c99beff9215736945b4a5a3875dbbcf1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 1000
+  towerCost: 1500
   towerCostText: {fileID: 4032804693430832691}
   towerName: Database
   towerDescription: Databases make no money on their own but can dramatically increase
@@ -369,7 +369,6 @@ MonoBehaviour:
   hackObjectDetection: {fileID: 1762778155798377611}
   databaseMaxDist: 2.5
   databaseIncreasePercent: 0.25
-  lineRendererWidth: 0
 --- !u!1001 &1735208337426735917
 PrefabInstance:
   m_ObjectHideFlags: 0

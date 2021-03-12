@@ -198,6 +198,36 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 15602076}
   m_CullTransparentMesh: 0
+--- !u!1 &122005998
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 122005999}
+  m_Layer: 0
+  m_Name: Alert Transform
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &122005999
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 122005998}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -9.06, y: 3.191, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &134829636
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,7 +507,7 @@ Transform:
   m_Children:
   - {fileID: 141897421}
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &229966857
 MonoBehaviour:
@@ -2235,7 +2265,7 @@ MonoBehaviour:
   phishingEnemy: {fileID: 8917153954495845625, guid: 7144c7fb3c7b71c4dbc09f92aa8c1146, type: 3}
   spamEnemy: {fileID: 4289910860902523212, guid: 83f160d104328a846aaf0df4cb84b6d2, type: 3}
   mitmEnemy: {fileID: 7049062951281742203, guid: 3a3ab73c988b1234083ccacd9cbd5d16, type: 3}
-  timeBetweenWaves: 15
+  timeBetweenWaves: 5
   timePerTick: 1
   timeBetweenTicks: 1
   gridOrigin: {fileID: 1830110188}
@@ -2253,6 +2283,10 @@ MonoBehaviour:
   lineRendererMaterial: {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   emittedTextPrefab: {fileID: 4018047167176579618, guid: bc5dc36eb04900744b592336518a09d8, type: 3}
   waveInfoController: {fileID: 134829637}
+  waveAlertTransform: {fileID: 122005998}
+  enemyScaleBase: 1.2
+  speedScaleBase: 1.2
+  tickScaleBase: 0.8
   enemyPath:
   - {fileID: 1916431691}
   - {fileID: 257676662}
@@ -2260,6 +2294,7 @@ MonoBehaviour:
   - {fileID: 439855803}
   - {fileID: 1433523672}
   - {fileID: 148738753}
+  waveNum: 0
 --- !u!4 &1446916047
 Transform:
   m_ObjectHideFlags: 0
@@ -2360,41 +2395,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 94a294a26d8ccad48b8308f6ed2e20bd, type: 3}
---- !u!1 &1575107078
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1575107079}
-  m_Layer: 5
-  m_Name: Fill Area
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!224 &1575107079
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1575107078}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0.25}
-  m_AnchorMax: {x: 1, y: 0.75}
-  m_AnchoredPosition: {x: -5, y: 0}
-  m_SizeDelta: {x: -20, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1674887290
 GameObject:
   m_ObjectHideFlags: 0
