@@ -8,13 +8,11 @@ public class DatabaseTower : HackableTower
     public float databaseMaxDist = 2.5f;
     public float databaseIncreasePercent = .25f;
 
-    public float lineRendererWidth = 1;
-
     private LineRenderer currentLineRenderer;
 
     public DatabaseTower() : base()
     {
-        OnPlaced += (towerRoot) => currentLineRenderer = GameController.DrawCircle(towerRoot, Vector3.zero, databaseMaxDist, lineRendererWidth, Color.magenta, false);
+        OnPlaced += (towerRoot) => currentLineRenderer = GameController.DrawCircle(towerRoot, Vector3.zero, databaseMaxDist, 0.02f, Color.magenta, false);
         OnHacked += (enemy) =>
         {
             if (currentLineRenderer != null)

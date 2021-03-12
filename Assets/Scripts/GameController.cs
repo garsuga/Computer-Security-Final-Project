@@ -212,6 +212,7 @@ public class GameController : MonoBehaviour
 
         mouseObserver.OnMouseDrag += MouseDrag;
         mouseObserver.OnMousePress += MousePress;
+        mouseObserver.OnMouseClick += MouseClick;
 
         SetupWaves();
         StartCoroutine("SpawnWaves");
@@ -300,11 +301,19 @@ public class GameController : MonoBehaviour
         }
     }
 
+    void MouseClick(int button, Vector3 pressScreenPos, Vector3 releaseScreenPos)
+    {
+        if (currentTowerHolding != null)
+            Destroy(currentTowerHolding);
+        currentTowerHolding = null;
+    }
+
     void MouseDrag(int button, Vector3 startPosScreen, Vector3 currentPosScreen, float time, bool isOver)
     {
         if (currentTowerHolding != null) {
             if (isOver)
             {
+                Debug.Log("Mouse drag finish.");
                 Vector3 worldPos = mainCamera.ScreenToWorldPoint(currentPosScreen);
 
                 TowerGrid.Position gridPosition = towerGrid.toGridPosition(worldPos);

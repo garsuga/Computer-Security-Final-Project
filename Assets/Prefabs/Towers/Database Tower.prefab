@@ -369,7 +369,7 @@ MonoBehaviour:
   hackObjectDetection: {fileID: 1762778155798377611}
   databaseMaxDist: 2.5
   databaseIncreasePercent: 0.25
-  lineRendererWidth: 1
+  lineRendererWidth: 0
 --- !u!1001 &1735208337426735917
 PrefabInstance:
   m_ObjectHideFlags: 0
