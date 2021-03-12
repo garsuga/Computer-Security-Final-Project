@@ -32,7 +32,7 @@ public abstract class EnemyBehavior : MonoBehaviour
         }
     }
 
-    private bool isEarlyDestroyed = false;
+    public bool isEarlyDestroyed = false;
 
     public bool IsDead
     {

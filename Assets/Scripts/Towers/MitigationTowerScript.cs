@@ -39,7 +39,7 @@ public class MitigationTowerScript : TowerBehavior
         yield return new WaitForSeconds(attackDelaySeconds);
 
         List<GameObject> valid = shootObjectDetection.ValidEnemiesInRange.FindAll(go => go != null);
-        Debug.Log("Mitigation destroying " + valid.Count + " enemies.");
+        //Debug.Log("Mitigation destroying " + valid.Count + " enemies.");
         valid.ForEach(go => Destroy(go));
     }
 

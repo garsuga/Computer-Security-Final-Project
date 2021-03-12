@@ -6,6 +6,8 @@ public class FollowPointPathBehavior : MonoBehaviour
 {
     public float speed;
 
+    public int pathPointIndex = 0;
+
     public float moveUpdateRate = .02f;
     // Start is called before the first frame update
     void Start()
@@ -26,15 +28,15 @@ public class FollowPointPathBehavior : MonoBehaviour
 
     IEnumerator MoveToTargets()
     {
-        for (int i = 0; i < GameController.instance.enemyPath.Length; i++)
+        for (pathPointIndex = 0; pathPointIndex < GameController.instance.enemyPath.Length; pathPointIndex++)
         {
             while (true)
             {
-                Vector3 toMove = GameController.instance.enemyPath[i].transform.position - transform.position;
+                Vector3 toMove = GameController.instance.enemyPath[pathPointIndex].transform.position - transform.position;
 
                 if (toMove.magnitude < speed * moveUpdateRate)
                 {
-                    transform.position = GameController.instance.enemyPath[i].transform.position;
+                    transform.position = GameController.instance.enemyPath[pathPointIndex].transform.position;
                     break;
                 }
                 else

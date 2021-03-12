@@ -8,9 +8,13 @@ public class MITMBehavior : EnemyBehavior
     [Header("MITM Attack Settings")]
     public int maxEnemiesCanTeleport = 5;
 
+    private FollowPointPathBehavior followPointPathBehavior;
+
     public override void Start()
     {
         base.Start();
+
+        followPointPathBehavior = gameObject.GetComponent<FollowPointPathBehavior>();
 
         OnEnemyDeath += () =>
         {
@@ -23,6 +27,9 @@ public class MITMBehavior : EnemyBehavior
             for(int i = 0; i < maxEnemiesCanTeleport && i < enemies.Count; i++)
             {
                 enemies[i].transform.position = this.transform.position;
+
+                FollowPointPathBehavior follow = enemies[i].GetComponent<FollowPointPathBehavior>();
+                follow.pathPointIndex = followPointPathBehavior.pathPointIndex;
             }
         };
     }

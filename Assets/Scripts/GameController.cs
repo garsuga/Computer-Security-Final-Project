@@ -95,6 +95,16 @@ public class GameController : MonoBehaviour
         return emittedText;
     }
 
+    public static GameObject ShowWarning(string text)
+    {
+        GameObject warning = Instantiate<GameObject>(GameController.instance.warningPrefab);
+        WarningController controller = warning.GetComponent<WarningController>();
+        controller.SetWarningText(text).FadeIn(3);
+        warning.transform.parent = null;
+        warning.transform.position = new Vector3(0,0,-3);
+        return warning;
+    }
+
     public GameObject AlertText(string text, Color color)
     {
         return EmitText(this.waveAlertTransform, Vector3.zero, text, 1f, color, 50, new Vector3(0, .5f));
@@ -146,6 +156,7 @@ public class GameController : MonoBehaviour
     public GameObject emittedTextPrefab;
     public WaveInfoController waveInfoController;
     public GameObject waveAlertTransform;
+    public GameObject warningPrefab;
 
     [Header("Difficulty Settings")]
     public float enemyScaleBase = 1.2f;
@@ -168,10 +179,13 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public delegate void Callback();
+
     private TowerGrid towerGrid;
     private MouseObserverBevahior mouseObserver;
     public GameObject[] enemyPath = new GameObject[0];
     public Dictionary<int, WaveSetting[]> waveMap;
+    public Dictionary<int, Callback> waveEvents;
     private Camera mainCamera;
     public int waveNum = 0;
 
@@ -377,10 +391,6 @@ public class GameController : MonoBehaviour
         {
             { 0, new WaveSetting[]
                 {
-                    new WaveSetting("small-virus", new Dictionary<GameObject, int>()
-                    {
-                        { virusEnemy, 10 }
-                    }, 3, null),
                     new WaveSetting("large-virus", new Dictionary<GameObject, int>()
                     {
                         { virusEnemy, 20 }
@@ -392,17 +402,17 @@ public class GameController : MonoBehaviour
                     }, 4, null),
                 }
             },
-            { 3, new WaveSetting[]
+            { 5, new WaveSetting[]
                 {
                     new WaveSetting("small-virus-mitm-phishing", new Dictionary<GameObject, int>()
                     {
                         { mitmEnemy, 1 },
                         { virusEnemy, 10 },
                         { phishingEnemy, 1 }
-                    }, 3, null)
+                    }, 5, null)
                 }
             },
-            { 5, new WaveSetting[]
+            { 7, new WaveSetting[]
                 {
                     new WaveSetting("large-phishing", new Dictionary<GameObject, int>()
                     {
@@ -415,7 +425,7 @@ public class GameController : MonoBehaviour
                     new WaveSetting("large-ddos", new Dictionary<GameObject, int>()
                     {
                         { spamEnemy, 40 }
-                    }, 3, () => AlertText("DDoS Attack!", Color.red)),
+                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
                 }
             },
             { 15, new WaveSetting[]
@@ -425,9 +435,15 @@ public class GameController : MonoBehaviour
                         { virusEnemy, 10 },
                         { spamEnemy, 30 },
                         { phishingEnemy, 10 }
-                    }, 3, () => AlertText("DDoS Attack!", Color.red))
+                    }, 8, () => AlertText("DDoS Attack!", Color.red))
                 }
             }
+        };
+
+        waveEvents = new Dictionary<int, Callback>()
+        {
+            { 4, () => ShowWarning("Phishing attacks being wave 5.\n\nPurchase a Phishing Detection Tower.") },
+            { 8, () => ShowWarning("DDoS attacks begin wave 10.\n\nPuchase Mitigation Towers.") }
         };
     }
 
@@ -460,6 +476,11 @@ public class GameController : MonoBehaviour
         while(true)
         {
             waveNum++;
+
+            if(waveEvents.ContainsKey(waveNum))
+            {
+                waveEvents[waveNum].Invoke();
+            }
 
             WaveSetting wave = SelectWave(waveNum);
 

@@ -165,7 +165,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 83a8b08ecdad1ed4997fdca4838e2fd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 2500
+  towerCost: 850
   towerCostText: {fileID: 5705694322657347905}
   towerName: Crypto Miner
   towerDescription: The crypto miners are a conservative approach to money making
@@ -179,7 +179,7 @@ MonoBehaviour:
   shopHoverDescParent: {fileID: 7257126166689900857}
   shootObjectDetection: {fileID: 3212372036135106214}
   shopGrabCollider: {fileID: 3212372036091064307}
-  moneyAmount: 250
+  moneyAmount: 350
 --- !u!1 &3212372036135106212
 GameObject:
   m_ObjectHideFlags: 0

@@ -268,7 +268,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7fa490f686514f24cbfe1ab2714e4f2d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  towerCost: 850
+  towerCost: 1250
   towerCostText: {fileID: 2682753419642851000}
   towerName: Website
   towerDescription: Websites are vulnerable to attacks but can make much more money
@@ -286,7 +286,7 @@ MonoBehaviour:
   hackedUiParent: {fileID: 7636908610919916388}
   hackObjectDetection: {fileID: 5429585277382165901}
   enemyStartTransform: {fileID: 0}
-  moneyAmount: 1000
+  moneyAmount: 850
 --- !u!1 &9054986233184474724
 GameObject:
   m_ObjectHideFlags: 0
