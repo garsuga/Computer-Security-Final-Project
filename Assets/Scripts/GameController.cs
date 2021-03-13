@@ -243,8 +243,8 @@ public class GameController : MonoBehaviour
         SetupWaves();
         StartCoroutine("SpawnWaves");
 
-        CreateTowerPlacementLineRenderers();
-        CreateEnemyPathLineRenderer();
+        //CreateTowerPlacementLineRenderers();
+        //CreateEnemyPathLineRenderer();
     }
 
     private void CreateTowerPlacementLineRenderers()
@@ -422,15 +422,23 @@ public class GameController : MonoBehaviour
             },
             { 10, new WaveSetting[]
                 {
+                    new WaveSetting("small-ddos", new Dictionary<GameObject, int>()
+                    {
+                        { spamEnemy, 20 }
+                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
+                    new WaveSetting("medium-ddos", new Dictionary<GameObject, int>()
+                    {
+                        { spamEnemy, 25 }
+                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
                     new WaveSetting("large-ddos", new Dictionary<GameObject, int>()
                     {
-                        { spamEnemy, 40 }
+                        { spamEnemy, 30 }
                     }, 10, () => AlertText("DDoS Attack!", Color.red)),
                 }
             },
             { 15, new WaveSetting[]
                 {
-                    new WaveSetting("medium-ddos-small-virus-phishing", new Dictionary<GameObject, int>()
+                    new WaveSetting("large-ddos-small-virus-phishing", new Dictionary<GameObject, int>()
                     {
                         { virusEnemy, 10 },
                         { spamEnemy, 30 },
