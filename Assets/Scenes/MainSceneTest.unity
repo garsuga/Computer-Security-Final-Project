@@ -2418,9 +2418,10 @@ MonoBehaviour:
   waveInfoController: {fileID: 134829637}
   waveAlertTransform: {fileID: 122005998}
   warningPrefab: {fileID: 6979277361578892001, guid: f96f3cfdd33b39f45b02371d71d441d3, type: 3}
-  enemyScaleBase: 1.3
-  speedScaleBase: 1.08
+  enemyScaleBase: 1.2
+  speedScaleBase: 1.06
   tickScaleBase: 0.85
+  timeScale: 1.5
   enemyPath:
   - {fileID: 1916431691}
   - {fileID: 257676662}

@@ -23,7 +23,7 @@ public class WaveInfoController : MonoBehaviour
     {
         nextWaveTimerActive = true;
         nextWaveTimerLength = length;
-        nextWaveTimerStart = Time.time;
+        nextWaveTimerStart = Time.realtimeSinceStartup;
         waveTimerText.enabled = true;
     }
 
@@ -38,13 +38,13 @@ public class WaveInfoController : MonoBehaviour
     {
         if (nextWaveTimerActive)
         {
-            if (Time.time > nextWaveTimerStart + nextWaveTimerLength)
+            if (Time.realtimeSinceStartup > nextWaveTimerStart + nextWaveTimerLength)
             {
                 nextWaveTimerActive = false;
                 waveTimerText.enabled = false;
             } else
             {
-                int wholeSecondsLeft = Mathf.CeilToInt(nextWaveTimerStart + nextWaveTimerLength - Time.time);
+                int wholeSecondsLeft = Mathf.CeilToInt(nextWaveTimerStart + nextWaveTimerLength - Time.realtimeSinceStartup);
                 waveTimerText.text = "Next wave in " + wholeSecondsLeft + "s";
             }
         }

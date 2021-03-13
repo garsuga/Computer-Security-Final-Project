@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -162,6 +163,7 @@ public class GameController : MonoBehaviour
     public float enemyScaleBase = 1.2f;
     public float speedScaleBase = 1.2f;
     public float tickScaleBase = 0.8f;
+    public float timeScale = 1;
 
     public int Money
     {
@@ -184,8 +186,11 @@ public class GameController : MonoBehaviour
     private TowerGrid towerGrid;
     private MouseObserverBevahior mouseObserver;
     public GameObject[] enemyPath = new GameObject[0];
-    public Dictionary<int, WaveSetting[]> waveMap;
+    public Dictionary<string, WaveSetting> waveIndex;
+    public Dictionary<int, string[]> waveMap;
     public Dictionary<int, Callback> waveEvents;
+    public Dictionary<int, string> waveOverrides;
+
     private Camera mainCamera;
     public int waveNum = 0;
 
@@ -219,6 +224,8 @@ public class GameController : MonoBehaviour
     void Start()
     {
         mainCamera = Camera.main;
+
+        Time.timeScale = timeScale;
 
         OnEnemyExited += (whoExited) => playerHealth.AdjustHealth();
         PlayerHealth.OnHealthChanged += (newHealth) =>
@@ -373,78 +380,116 @@ public class GameController : MonoBehaviour
 
     void SetupWaves()
     {
-        /**
-         * Dictionary int -> Wave...
-         * 
-         * The integer is the first wave which can spawn from each group.
-         * This is used to lock difficult attacks behind time restrictions.
-         * 
-         * Each wave has a Dictionary GameObject -> int
-         * The integer is the count of enemies and the GameObject is the prefab to spawn.
-         * Each wave accepts a 'enemies per tick' and Callable as well.
-         * 
-         * Callable is optional and allows code to be run each time that wave starts.
-         * The 'enemies per tick' dictates the relative rate enemies spawn.
-         * Ticks are scaled with difficulty and become shorter.
-         */
-        waveMap = new Dictionary<int, WaveSetting[]>()
+        waveIndex = new Dictionary<string, WaveSetting>()
         {
-            { 0, new WaveSetting[]
+            {
+                "large-virus",
+                new WaveSetting("large-virus", new Dictionary<GameObject, int>()
                 {
-                    new WaveSetting("large-virus", new Dictionary<GameObject, int>()
-                    {
-                        { virusEnemy, 20 }
-                    }, 5, null),
-                    new WaveSetting("large-virus-mitm", new Dictionary<GameObject, int>()
-                    {
-                        { virusEnemy, 20 },
-                        { mitmEnemy, 1 }
-                    }, 4, null),
+                    { virusEnemy, 20 }
+                }, 5, null)
+
+            },
+            {
+                "large-virus-mitm",
+                new WaveSetting("large-virus-mitm", new Dictionary<GameObject, int>()
+                {
+                    { virusEnemy, 20 },
+                    { mitmEnemy, 1 }
+                }, 4, null)
+            },
+            {
+                "small-virus-mitm-phishing",
+                new WaveSetting("small-virus-mitm-phishing", new Dictionary<GameObject, int>()
+                {
+                    { virusEnemy, 6 },
+                    { phishingEnemy, 1 }
+                }, 4, null)
+            },
+            {
+                "small-ddos",
+                new WaveSetting("small-ddos", new Dictionary<GameObject, int>()
+                {
+                    { spamEnemy, 20 }
+                }, 10, () => AlertText("DDoS Attack!", Color.red))
+            },
+            {
+                "large-phishing",
+                new WaveSetting("large-phishing", new Dictionary<GameObject, int>()
+                {
+                    { phishingEnemy, 3 }
+                }, 2, () => AlertText("Phishing Scams!", Color.red))
+            },
+            {
+                "large-ddos-small-virus-phishing",
+                new WaveSetting("large-ddos-small-virus-phishing", new Dictionary<GameObject, int>()
+                {
+                    { virusEnemy, 10 },
+                    { spamEnemy, 30 },
+                    { phishingEnemy, 10 }
+                }, 8, () => AlertText("DDoS Attack!", Color.red))
+            }
+        };
+        waveMap = new Dictionary<int, string[]>()
+        {
+            { 0, new string[]
+                {
+                    "large-virus",
+                    "large-virus-mitm"
                 }
             },
-            { 5, new WaveSetting[]
-                {
-                    new WaveSetting("small-virus-mitm-phishing", new Dictionary<GameObject, int>()
-                    {
-                        { mitmEnemy, 1 },
-                        { virusEnemy, 10 },
-                        { phishingEnemy, 1 }
-                    }, 5, null)
+            { 5, new string[]
+                {        
+                    "small-virus-mitm-phishing"
                 }
             },
-            { 7, new WaveSetting[]
+            { 7, new string[]
                 {
-                    new WaveSetting("large-phishing", new Dictionary<GameObject, int>()
-                    {
-                        { phishingEnemy, 10 }
-                    }, 3, () => AlertText("Phishing Scams!", Color.red))
+                    "large-phishing"
                 }
             },
-            { 10, new WaveSetting[]
+            { 10, new string[]
                 {
-                    new WaveSetting("small-ddos", new Dictionary<GameObject, int>()
-                    {
-                        { spamEnemy, 20 }
-                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
-                    new WaveSetting("medium-ddos", new Dictionary<GameObject, int>()
-                    {
-                        { spamEnemy, 25 }
-                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
-                    new WaveSetting("large-ddos", new Dictionary<GameObject, int>()
-                    {
-                        { spamEnemy, 30 }
-                    }, 10, () => AlertText("DDoS Attack!", Color.red)),
+                    "small-ddos"
                 }
             },
-            { 15, new WaveSetting[]
+            { 15, new string[]
                 {
-                    new WaveSetting("large-ddos-small-virus-phishing", new Dictionary<GameObject, int>()
-                    {
-                        { virusEnemy, 10 },
-                        { spamEnemy, 30 },
-                        { phishingEnemy, 10 }
-                    }, 8, () => AlertText("DDoS Attack!", Color.red))
+                    "large-ddos-small-virus-phishing"
                 }
+            }
+        };
+        waveOverrides = new Dictionary<int, string>()
+        {
+            {
+                1, "large-virus"
+            },
+            {
+                2, "large-virus"
+            },
+            {
+                3, "large-virus"
+            },
+            {
+                4, "large-virus-mitm"
+            },
+            {
+                5, "small-virus-mitm-phishing"
+            },
+            {
+                6, "large-virus"
+            },
+            {
+                7, "small-virus-mitm-phishing"
+            },
+            {
+                8, "large-phishing"
+            },
+            {
+                9, "small-virus-mitm-phishing"
+            },
+            {
+                10, "small-ddos"
             }
         };
 
@@ -462,7 +507,7 @@ public class GameController : MonoBehaviour
         {
             if(kvp.Key <= nextWaveNum)
             {
-                selectedWaves.AddRange(kvp.Value);
+                selectedWaves.AddRange(kvp.Value.Select(name => waveIndex[name]));
             }
         }
 
@@ -471,6 +516,9 @@ public class GameController : MonoBehaviour
 
     private WaveSetting SelectWave(int waveNum)
     {
+        if (waveOverrides.ContainsKey(waveNum))
+            return waveIndex[waveOverrides[waveNum]];
+
         List<WaveSetting> agg = AggregateWaves(waveNum);
         return agg[UnityEngine.Random.Range(0, agg.Count - 1)];
     }
@@ -534,7 +582,7 @@ public class GameController : MonoBehaviour
 
             waveInfoController.StartTimer(timeBetweenWaves);
 
-            yield return new WaitForSeconds(timeBetweenWaves);
+            yield return new WaitForSecondsRealtime(timeBetweenWaves);
         }
     }
 

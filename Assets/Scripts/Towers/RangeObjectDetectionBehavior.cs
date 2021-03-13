@@ -121,7 +121,7 @@ public class RangeObjectDetectionBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        timeLastShot = Time.realtimeSinceStartup;
+        timeLastShot = Time.time;
     }
 
     // Update is called once per frame
@@ -140,9 +140,9 @@ public class RangeObjectDetectionBehavior : MonoBehaviour
 
         if(currentTarget != null)
         {
-            if(CanShoot(Time.realtimeSinceStartup - timeLastShot, projectilesActive))
+            if(CanShoot(Time.time - timeLastShot, projectilesActive))
             {
-                timeLastShot = Time.realtimeSinceStartup;
+                timeLastShot = Time.time;
                 if (CreateProjectile != null)
                 {
                     GameObject projectile = CreateProjectile();

@@ -27,13 +27,13 @@ public class ProjectileHookBehavior : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        timeCreatedSeconds = Time.realtimeSinceStartup;
+        timeCreatedSeconds = Time.time;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Time.realtimeSinceStartup - timeCreatedSeconds > maxTimeAliveSeconds)
+        if (Time.time - timeCreatedSeconds > maxTimeAliveSeconds)
         {
             Destroy(this.gameObject);
             OnDestroy?.Invoke(DestroyReason.TIMEOUT);
