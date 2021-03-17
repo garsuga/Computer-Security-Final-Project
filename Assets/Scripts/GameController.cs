@@ -125,6 +125,7 @@ public class GameController : MonoBehaviour
     public GameObject mitmEnemy;
 
     [Header("Wave Settings")]
+    public float timeBeforeFirstWave = 15f;
     public float timeBetweenWaves = 15f;
 
     public float timePerTick = 1f;
@@ -528,6 +529,8 @@ public class GameController : MonoBehaviour
     IEnumerator SpawnWaves()
     {
         waveNum = 0;
+
+        yield return new WaitForSecondsRealtime(timeBeforeFirstWave);
 
         while(true)
         {

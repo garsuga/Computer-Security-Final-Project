@@ -2398,6 +2398,7 @@ MonoBehaviour:
   phishingEnemy: {fileID: 8917153954495845625, guid: 7144c7fb3c7b71c4dbc09f92aa8c1146, type: 3}
   spamEnemy: {fileID: 4289910860902523212, guid: 83f160d104328a846aaf0df4cb84b6d2, type: 3}
   mitmEnemy: {fileID: 7049062951281742203, guid: 3a3ab73c988b1234083ccacd9cbd5d16, type: 3}
+  timeBeforeFirstWave: 5
   timeBetweenWaves: 5
   timePerTick: 1
   timeBetweenTicks: 1
